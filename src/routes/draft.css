@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html,
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+
+.draftable-player-div {
+  width: 150px;
+  background-color: #121212;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 3px 2px;
+}
+
+.qb {
+  background-color: #FF6961;
+}
+
+.rb {
+  background-color: #56AE57;
+}
+
+.wr {
+  background-color: #779ECB;
+}
+
+
+.te {
+  background-color: #b9b920;
+}
+
+.draftable-player-div h1 {
+  color: white;
+}
+
+.draftable-player-div span {
+  color: white;
+}
+
+.draft-board {
+  display: flex;
+  flex-direction: row;
+  width: 1300px;
+  flex-wrap: wrap;
+}
+
+.drafted-row {
+  display: flex;
+  flex-direction: row;
+  height: 64px;
+}
+
+.bottom-feed {
+  display: flex;
+  flex-direction: row;
+}
+
+.draftable-players {
+  display: flex;
+  flex-direction: column;
+  width: 375px;
+}
+
+ul.custom-list {
+  list-style-type: none;
+  padding-left: 20px;
+  height: 270px;
+  overflow-y: auto;
+}
+
+li {
+  cursor: pointer;
+}
+
+ul.custom-list li::before {
+  content: "+ ";
+  color: black;
+  font-size: x-large;
+}
+
+.drafted-players {
+  display: flex;
+  flex-direction: row;
+  width: 500px;
+  margin-left: 20px;
+}
+
+.drafted-players .user-team {
+  display: flex;
+  flex-direction: row;
+}
+
+.test {
+  display: flex;
+  flex-direction: row;
+}
