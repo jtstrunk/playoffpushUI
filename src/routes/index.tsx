@@ -9,13 +9,6 @@ type LeagueInformation = {
   status: string;
 };
 
-// const Leagues: LeagueInformation[] = [
-//   {leagueid: 1, name: 'Premier League', status: 'Post-Draft'},
-//   {leagueid: 2, name: 'La Liga', status: 'Pre-Draft'},
-//   {leagueid: 3, name: 'Friendship League', status: 'Drafting'},
-//   {leagueid: 5, name: 'Liberty', status: 'Pre-Draft'},
-// ]
-
 export const route = {
   component: function Welcome() {
     const { loggedInUser } = useAuth();

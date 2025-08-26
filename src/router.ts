@@ -3,6 +3,7 @@ import { route as rootRoute } from './routes/__root';
 import { route as indexRoute } from './routes/index';
 import { route as loginRoute } from './routes/login';
 import { route as draftRoute } from './routes/draft';
+import { route as leagueRoute } from './routes/league';
 
 type RouterContext = {
   loggedInUser: string | null;
@@ -16,9 +17,24 @@ const routeTree = rootRoute.addChildren([
   }),
   createRoute({
     getParentRoute: () => rootRoute,
+    path: '/league',
+    component: leagueRoute.component,
+    beforeLoad: ({ context, location }) => {
+      if (!context.loggedInUser) {
+        throw redirect({
+          to: '/login',
+          search: {
+            from: location.pathname,
+          },
+          throw: true,
+        });
+      }
+    },
+  }),
+  createRoute({
+    getParentRoute: () => rootRoute,
     path: '/login',
     component: loginRoute.component,
-    // Add validateSearch to parse 'from' parameter safely
     validateSearch: (search: Record<string, unknown>) => ({
       from: typeof search.from === 'string' ? search.from : undefined,
     }),

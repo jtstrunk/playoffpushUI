@@ -3,13 +3,14 @@ import { useAuth } from '../auth/AuthContext';
 import './draft.css';
 
 type PlayerInfo = {
+  playerid: number
   name: string;
   position: string;
   team: string;
   points: number;
 };
 
-const users: string[] = ["Josh", "Nate", "Sam", "Ethan"]
+const users: string[] = ["Nate", "Josh", "Sam", "Ethan"]
 
 type Team = {
   userName: string;
@@ -82,6 +83,7 @@ export const route = {
     }, []);
 
     function draftPlayer(draftedPlayer: PlayerInfo) {
+      console.log('turn index', turnIndex)
       console.log(users[turnIndex], 'drafted', draftedPlayer.name);
       let positionCheck = 0;
       userTeams[turnIndex].players.forEach(element => {
@@ -120,6 +122,19 @@ export const route = {
 
         return newUserTeams;
       })
+
+      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(1)}&userid=${encodeURIComponent(turnIndex+1)}&playerid=${encodeURIComponent(draftedPlayer.playerid)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to record draft');
+        return res.json();
+      })
+      .then((data) => {
+        console.log('Draft player response', data);
+        // If you want to update state with a new player list, do it here
+      })
+      .catch((error) => {
+        console.error('Error drafting player:', error);
+      });
       
       nextTurn();
     }

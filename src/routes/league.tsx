@@ -1,0 +1,137 @@
+import React, { useState, useEffect }from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { useSearch } from '@tanstack/react-router';
+import './league.css';
+
+type LeagueUsers = {
+  userid: number;
+  username: string;
+  teamname: string;
+  draftposition: string;
+};
+
+interface UserTeamRow {
+  leagueid: number;
+  userid: number;
+  playerid: number;
+  username: string;
+  teamname: string;
+  name: string;
+  position: string;
+  wildcard: number;
+  divisional: number;
+  championship: number;
+  superbowl: number;
+  totalpoints: number;
+}
+
+type UserTeam = {
+    username: string;
+    teamname: string;
+    totalpoints: number;
+    players: UserTeamRow[];
+}
+
+const positionOrder = {
+  QB: 1,
+  RB: 2,
+  WR: 3,
+  TE: 4,
+};
+
+export const route = {
+    component: function League() {
+        const { loggedInUser } = useAuth();
+        const { name, status, id } = useSearch({ from: '/league' });
+        console.log('league', name, status, id)
+
+        const [users, setLeagues] = useState<LeagueUsers[]>([]);
+        const [userTeamRows, setTeamRows] = useState<UserTeamRow[]>([]);
+        useEffect(() => {
+            if (loggedInUser) {
+                fetch(`http://localhost:3000/getleaguesinformation?id=${encodeURIComponent(id)}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch users');
+                    return res.json();
+                })
+                .then((data: LeagueUsers[]) => {
+                    console.log('LeagueUsers', data);
+                    setLeagues(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching player data:', error);
+                });
+            }
+        }, [loggedInUser]);
+
+        console.log('leagueid', id)
+        useEffect(() => {
+            fetch(`http://localhost:3000/getuserteam?leagueid=${encodeURIComponent(id)}`)
+            .then(res => {
+                console.log()
+                if (!res.ok) throw new Error('Failed to fetch users team');
+                return res.json();
+            })
+            .then((data) => {
+                console.log('user teams rows', data);
+                setTeamRows(data);
+            })
+            .catch(error => {
+                console.error('Error fetching player data:', error);
+            });
+            
+        }, []);
+
+
+        const userTeams: UserTeam[] = users.map(user => {
+            const players = userTeamRows.filter(player => player.userid === user.userid);
+            const totalpoints = players.reduce((sum, player) => sum + player.totalpoints, 0);
+
+            return {
+                username: user.username,
+                teamname: user.teamname,
+                totalpoints: totalpoints,
+                players: players,
+            };
+        });
+
+        
+        console.log('User Teams', userTeams);
+
+        return (
+            <div>
+                <h1>League</h1>
+                <h2>{name}</h2>
+                <h3>Status: {status}</h3>
+
+                <div className='user-list'>
+                    {userTeams.slice().sort((a, b) => b.totalpoints - a.totalpoints)
+                    .map((userTeam) => (
+                        <div key={userTeam.username}>
+                            <div className="user"> 
+                                <h1>{userTeam.teamname}</h1>
+                                <h1>{userTeam.totalpoints.toFixed(2)}</h1>
+                            </div>
+                            {userTeam.players.slice()
+                            .sort((a, b) => 
+                                positionOrder[a.position as "QB" | "RB" | "WR" | "TE"] - 
+                                positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
+                            ).map((player) => (
+                                <div key={player.playerid} style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        width: '240px',
+                                        marginLeft: '5px',
+                                    }}>
+                                    <h1>{player.name}</h1>
+                                    <h1>{player.position}</h1>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+}
