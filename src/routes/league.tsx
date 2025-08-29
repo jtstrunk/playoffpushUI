@@ -104,33 +104,43 @@ export const route = {
                 <h2>{name}</h2>
                 <h3>Status: {status}</h3>
 
-                <div className='user-list'>
-                    {userTeams.slice().sort((a, b) => b.totalpoints - a.totalpoints)
-                    .map((userTeam) => (
-                        <div key={userTeam.username}>
+                {status === "Pre-Draft" ? (
+                    userTeams.length < 4 ? (
+                        <button>Needs More Users</button>
+                    ) : (
+                        <button>Join Draft Room</button>
+                    )) : (
+                    <div className='user-list'>
+                        {userTeams.slice()
+                        .sort((a, b) => b.totalpoints - a.totalpoints)
+                        .map((userTeam) => (
+                            <div key={userTeam.username}>
                             <div className="user"> 
                                 <h1>{userTeam.teamname}</h1>
                                 <h1>{userTeam.totalpoints.toFixed(2)}</h1>
                             </div>
                             {userTeam.players.slice()
-                            .sort((a, b) => 
+                                .sort((a, b) => 
                                 positionOrder[a.position as "QB" | "RB" | "WR" | "TE"] - 
                                 positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
-                            ).map((player) => (
+                                )
+                                .map((player) => (
                                 <div key={player.playerid} style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        width: '240px',
-                                        marginLeft: '5px',
-                                    }}>
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    width: '240px',
+                                    marginLeft: '5px',
+                                }}>
                                     <h1>{player.name}</h1>
                                     <h1>{player.position}</h1>
                                 </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </div>
         );
     }
