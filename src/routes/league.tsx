@@ -125,16 +125,21 @@ export const route = {
                                 positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
                                 )
                                 .map((player) => (
-                                <div key={player.playerid} style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    width: '240px',
-                                    marginLeft: '5px',
-                                }}>
-                                    <h1>{player.name}</h1>
-                                    <h1>{player.position}</h1>
-                                </div>
+                                    <div key={player.playerid}>
+                                        <div style={{ display: 'flex', flexDirection: 'row',
+                                            justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
+                                            <h1>{player.position}</h1>
+                                            <h1>{player.name}</h1>
+                                            <h1>{player.totalpoints.toFixed(2)}</h1>
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'row',
+                                            justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
+                                            <h1>{player.wildcard.toFixed(2)}</h1>
+                                            <h1>{player.divisional.toFixed(2)}</h1>
+                                            <h1>{player.championship.toFixed(2)}</h1>
+                                            <h1>{player.superbowl.toFixed(2)}</h1>
+                                        </div>  
+                                    </div>
                                 ))}
                             </div>
                         ))}
