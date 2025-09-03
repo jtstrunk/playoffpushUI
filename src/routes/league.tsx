@@ -4,25 +4,25 @@ import { useSearch } from '@tanstack/react-router';
 import './league.css';
 
 type LeagueUsers = {
-  userid: number;
-  username: string;
-  teamname: string;
-  draftposition: string;
+    userid: number;
+    username: string;
+    teamname: string;
+    draftposition: string;
 };
 
 interface UserTeamRow {
-  leagueid: number;
-  userid: number;
-  playerid: number;
-  username: string;
-  teamname: string;
-  name: string;
-  position: string;
-  wildcard: number;
-  divisional: number;
-  championship: number;
-  superbowl: number;
-  totalpoints: number;
+    leagueid: number;
+    userid: number;
+    playerid: number;
+    username: string;
+    teamname: string;
+    name: string;
+    position: string;
+    wildcard: number;
+    divisional: number;
+    championship: number;
+    superbowl: number;
+    totalpoints: number;
 }
 
 type UserTeam = {
