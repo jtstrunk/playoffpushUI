@@ -19,3 +19,41 @@
 .league h1 {
     font-size: 20px;
 }
+
+
+.textinput {
+    padding: 5px;
+    background-color: lightgrey;
+    border-radius: 5px;
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+
+#loginbutton {
+    color: #fff;
+    background-color: #337ab7;
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    /* width: 150px; */
+    width: 100%;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.clearbutton {
+    color: grey;
+    background-color: #fff;
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    border: 1px solid grey;
+    border-radius: 4px;
+    /* width: 150px; */
+    width: 100%;
+    cursor: pointer;
+    margin-bottom: 10px;
+}

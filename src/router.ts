@@ -5,10 +5,6 @@ import { route as loginRoute } from './routes/login';
 import { route as draftRoute } from './routes/draft';
 import { route as leagueRoute } from './routes/league';
 
-type RouterContext = {
-  loggedInUser: string | null;
-};
-
 const routeTree = rootRoute.addChildren([
   createRoute({
     getParentRoute: () => rootRoute,
@@ -19,13 +15,11 @@ const routeTree = rootRoute.addChildren([
     getParentRoute: () => rootRoute,
     path: '/league',
     component: leagueRoute.component,
-    beforeLoad: ({ context, location }) => {
-      if (!context.loggedInUser) {
+    beforeLoad: ({ location }) => {
+      if (!localStorage.getItem('loggedInUser')) {
         throw redirect({
           to: '/login',
-          search: {
-            from: location.pathname,
-          },
+          search: { from: location.pathname },
           throw: true,
         });
       }
@@ -43,13 +37,11 @@ const routeTree = rootRoute.addChildren([
     getParentRoute: () => rootRoute,
     path: '/draft',
     component: draftRoute.component,
-    beforeLoad: ({ context, location }) => {
-      if (!context.loggedInUser) {
+    beforeLoad: ({ location }) => {
+      if (!localStorage.getItem('loggedInUser')) {
         throw redirect({
           to: '/login',
-          search: {
-            from: location.pathname,
-          },
+          search: { from: location.pathname },
           throw: true,
         });
       }
@@ -57,11 +49,10 @@ const routeTree = rootRoute.addChildren([
   }),
 ]);
 
-
 export const router = createRouter({
   routeTree,
   context: {
-    loggedInUser: null, // will override dynamically in your app
+    loggedInUser: null,
   },
 });
 
