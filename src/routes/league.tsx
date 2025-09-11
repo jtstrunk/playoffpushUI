@@ -1,7 +1,13 @@
 import React, { useState, useEffect }from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { useSearch } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import './league.css';
+
+type LeagueInformation = {
+  leagueid: number;
+  name: string;
+  status: string;
+};
 
 type LeagueUsers = {
     userid: number;
@@ -41,6 +47,7 @@ const positionOrder = {
 
 export const route = {
     component: function League() {
+        const navigate = useNavigate();
         const { loggedInUser } = useAuth();
         const { name, status, id } = useSearch({ from: '/league' });
         console.log('league', name, status, id)
@@ -82,6 +89,15 @@ export const route = {
             
         }, []);
 
+        function handleClick() {
+            // name, status, id
+            console.log('leaguename', name);
+            navigate({
+                to: '/draft',
+                replace: true, 
+                search: { name: name, id: id }
+            });
+        }
 
         const userTeams: UserTeam[] = users.map(user => {
             const players = userTeamRows.filter(player => player.userid === user.userid);
@@ -108,7 +124,7 @@ export const route = {
                     userTeams.length < 4 ? (
                         <button>Needs More Users</button>
                     ) : (
-                        <button>Join Draft Room</button>
+                        <button onClick={() => handleClick()} >Join Draft Room</button>
                     )) : (
                     <div className='user-list'>
                         {userTeams.slice()

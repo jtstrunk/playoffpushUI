@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from '../auth/AuthContext';
+import { useSearch } from '@tanstack/react-router';
 import './draft.css';
 
 type PlayerInfo = {
@@ -64,6 +65,10 @@ export const route = {
     const [userTeams, setUserTeams] = useState<Team[]>(initialUserTeams);
     const { turnIndex, nextTurn } = useSnakeDraftTurns(users.length);
 
+
+    const { name, id } = useSearch({ from: '/draft' });
+    console.log('league information', name, id);
+
     const [players, setPlayers] = useState<PlayerInfo[]>([]);
     useEffect(() => {
       fetch('http://localhost:3000/getplayers')
@@ -123,7 +128,8 @@ export const route = {
         return newUserTeams;
       })
 
-      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(1)}&userid=${encodeURIComponent(turnIndex+1)}&playerid=${encodeURIComponent(draftedPlayer.playerid)}`)
+      console.log('drafting to league', id)
+      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(turnIndex+1)}&playerid=${encodeURIComponent(draftedPlayer.playerid)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to record draft');
         return res.json();
@@ -144,7 +150,7 @@ export const route = {
       <main className="flex items-center justify-center pt-16 pb-4">
         <div className="flex-1 flex flex-col items-center gap-6 min-h-0">
           <header className="flex flex-col items-center gap-9">
-            <h1>Draft Page</h1>
+            <h1>Draft Page - {name}</h1>
             <h1>Welcome, {loggedInUser}!</h1>
           </header>
           <div>
