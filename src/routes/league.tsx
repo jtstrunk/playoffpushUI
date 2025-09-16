@@ -3,12 +3,12 @@ import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import './league.css';
 
-type LeagueInformation = {
-  leagueid: number;
-  name: string;
-  status: string;
-};
-
+// type LeagueInformation = {
+//   leagueid: number;
+//   name: string;
+//   status: string;
+// };
+// 
 type LeagueUsers = {
     userid: number;
     username: string;
@@ -90,7 +90,6 @@ export const route = {
         }, []);
 
         function handleClick() {
-            // name, status, id
             console.log('leaguename', name);
             navigate({
                 to: '/draft',
@@ -119,6 +118,9 @@ export const route = {
                 <h1>League</h1>
                 <h2>{name}</h2>
                 <h3>Status: {status}</h3>
+                {status === "Post-Draft" ? (
+                    <h3 onClick={() => handleClick()}>View Draft Results</h3>
+                ) : null}
 
                 {status === "Pre-Draft" ? (
                     userTeams.length < 4 ? (
@@ -161,7 +163,6 @@ export const route = {
                         ))}
                     </div>
                 )}
-
             </div>
         );
     }

@@ -18,6 +18,28 @@ type Team = {
   players: PlayerInfo[];
 };
 
+interface UserTeamRow {
+  leagueid: number;
+  userid: number;
+  playerid: number;
+  username: string;
+  teamname: string;
+  name: string;
+  position: string;
+  wildcard: number;
+  divisional: number;
+  championship: number;
+  superbowl: number;
+  totalpoints: number;
+}
+
+type UserTeam = {
+  username: string;
+  teamname: string;
+  totalpoints: number;
+  players: UserTeamRow[];
+}
+
 const initialUserTeams: Team[] = [
   {userName: users[0], players: []},
   {userName: users[1], players: []},
@@ -58,16 +80,79 @@ export function DraftedPlayer({playerInformation}: { playerInformation: PlayerIn
 
 export const route = {
   component: function Welcome() {
-    const { loggedInUser } = useAuth();
+    const { loggedInUser} = useAuth();
     const [showingList, setShowingList] = useState('ALL');
     const [selectedUser, setSelectedUser] = useState('current');
     // const [players, setPlayers] = React.useState(initialPlayers);
     const [userTeams, setUserTeams] = useState<Team[]>(initialUserTeams);
-    const { turnIndex, nextTurn } = useSnakeDraftTurns(users.length);
-
-
-    const { name, id } = useSearch({ from: '/draft' });
+    const {turnIndex, nextTurn} = useSnakeDraftTurns(users.length);
+    const [draftPickNumber, setDraftPickNumber] = useState(1);
+    const [leagueStatus, setLeagueStatus] = useState(null);
+    const {name, id} = useSearch({ from: '/draft' });
     console.log('league information', name, id);
+
+    useEffect(() => {
+      fetch(`http://localhost:3000/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to fetch league information');
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data)
+          console.log('status', data[0].status)
+          setLeagueStatus(data[0].status);
+        })
+        .catch((error) => {
+          console.error('Error fetching league information:', error);
+        });
+    }, [id]); // Run on id or on mount
+
+    useEffect(() => {
+      if (leagueStatus === 'Post-Draft') {
+        fetch(`http://localhost:3000/getuserteam?leagueid=${encodeURIComponent(id)}`)
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to fetch user team');
+            return res.json();
+          })
+          .then((data) => {
+            console.log('user teams rows', data);
+            
+            const user1teams: PlayerInfo[] = data
+              .filter((player: UserTeamRow) => player.userid === 1)
+              .map((row: UserTeamRow): PlayerInfo => ({ playerid: row.playerid,
+                name: row.name, position: row.position,
+                team: row.teamname, points: row.totalpoints,
+              }));
+            const user2teams: PlayerInfo[] = data
+              .filter((player: UserTeamRow) => player.userid === 2)
+              .map((row: UserTeamRow): PlayerInfo => ({ playerid: row.playerid,
+                name: row.name, position: row.position,
+                team: row.teamname, points: row.totalpoints,
+              }));
+            const user3teams: PlayerInfo[] = data
+              .filter((player: UserTeamRow) => player.userid === 3)
+              .map((row: UserTeamRow): PlayerInfo => ({ playerid: row.playerid,
+                name: row.name, position: row.position,
+                team: row.teamname, points: row.totalpoints,
+              }));
+            const user4teams: PlayerInfo[] = data
+              .filter((player: UserTeamRow) => player.userid === 4)
+              .map((row: UserTeamRow): PlayerInfo => ({ playerid: row.playerid,
+                name: row.name, position: row.position,
+                team: row.teamname, points: row.totalpoints,
+              }));
+
+            userTeams[0].players = user1teams;
+            userTeams[1].players = user2teams;
+            userTeams[2].players = user3teams;
+            userTeams[3].players = user4teams;
+          })
+          .catch(error => {
+            console.error('Error fetching user team:', error);
+          });
+      }
+    }, [leagueStatus, id]);
+
 
     const [players, setPlayers] = useState<PlayerInfo[]>([]);
     useEffect(() => {
@@ -88,7 +173,7 @@ export const route = {
     }, []);
 
     function draftPlayer(draftedPlayer: PlayerInfo) {
-      console.log('turn index', turnIndex)
+      console.log('Draft Pick Number: ', draftPickNumber)
       console.log(users[turnIndex], 'drafted', draftedPlayer.name);
       let positionCheck = 0;
       userTeams[turnIndex].players.forEach(element => {
@@ -128,29 +213,41 @@ export const route = {
         return newUserTeams;
       })
 
-      console.log('drafting to league', id)
-      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(turnIndex+1)}&playerid=${encodeURIComponent(draftedPlayer.playerid)}`)
+      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(turnIndex+1)}
+        &playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to record draft');
         return res.json();
       })
       .then((data) => {
         console.log('Draft player response', data);
-        // If you want to update state with a new player list, do it here
+        setDraftPickNumber(prev => prev + 1);
       })
       .catch((error) => {
         console.error('Error drafting player:', error);
       });
       
       nextTurn();
+      if(draftPickNumber == 40) {
+        fetch(`http://localhost:3000/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
+          .then((res) => {
+            if (!res.ok) throw new Error('Failed to record draft');
+            return res.json();
+          })
+          .then((data) => {
+            console.log('Draft player response', data);
+          })
+          .catch((error) => {
+            console.error('Error drafting player:', error);
+        });
+      }
     }
-
 
     return (
       <main className="flex items-center justify-center pt-16 pb-4">
         <div className="flex-1 flex flex-col items-center gap-6 min-h-0">
           <header className="flex flex-col items-center gap-9">
-            <h1>Draft Page - {name}</h1>
+            <h1>Draft Page - {name} - {leagueStatus}</h1>
             <h1>Welcome, {loggedInUser}!</h1>
           </header>
           <div>
