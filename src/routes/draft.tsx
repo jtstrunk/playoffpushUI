@@ -142,10 +142,19 @@ export const route = {
                 team: row.teamname, points: row.totalpoints,
               }));
 
-            userTeams[0].players = user1teams;
-            userTeams[1].players = user2teams;
-            userTeams[2].players = user3teams;
-            userTeams[3].players = user4teams;
+            setUserTeams(prevUserTeams => {
+              const newUserTeams = [...prevUserTeams];
+
+              newUserTeams[0] = { ...newUserTeams[0], players: user1teams };
+              newUserTeams[1] = { ...newUserTeams[1], players: user2teams };
+              newUserTeams[2] = { ...newUserTeams[2], players: user3teams };
+              newUserTeams[3] = { ...newUserTeams[3], players: user4teams };
+
+              return newUserTeams;
+            });
+
+
+            console.log(userTeams)
           })
           .catch(error => {
             console.error('Error fetching user team:', error);

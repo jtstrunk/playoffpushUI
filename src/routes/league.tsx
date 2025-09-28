@@ -115,8 +115,8 @@ export const route = {
 
         return (
             <div>
-                <h1>League</h1>
-                <h2>{name}</h2>
+                {/* <h1>League</h1> */}
+                <h2 style={{fontSize: '25px'}}>{name}</h2>
                 <h3>Status: {status}</h3>
                 {status === "Post-Draft" ? (
                     <h3 onClick={() => handleClick()}>View Draft Results</h3>
@@ -128,7 +128,7 @@ export const route = {
                     ) : (
                         <button onClick={() => handleClick()} >Join Draft Room</button>
                     )) : (
-                    <div className='user-list'>
+                    <div className='user-list' style={{marginBottom: '40px'}}>
                         {userTeams.slice()
                         .sort((a, b) => b.totalpoints - a.totalpoints)
                         .map((userTeam) => (
@@ -143,7 +143,8 @@ export const route = {
                                 positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
                                 )
                                 .map((player) => (
-                                    <div key={player.playerid}>
+                                    <div key={player.playerid} style={{borderRadius: '5px', margin: '3px 2px', 
+                                        padding: '3px 2px', backgroundColor: 'lightGrey'}} >
                                         <div style={{ display: 'flex', flexDirection: 'row',
                                             justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
                                             <h1>{player.position}</h1>
@@ -152,10 +153,22 @@ export const route = {
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'row',
                                             justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
-                                            <h1>{player.wildcard.toFixed(2)}</h1>
-                                            <h1>{player.divisional.toFixed(2)}</h1>
-                                            <h1>{player.championship.toFixed(2)}</h1>
-                                            <h1>{player.superbowl.toFixed(2)}</h1>
+                                            <div>
+                                                <h1>{player.wildcard.toFixed(2)}</h1>
+                                                <h1 style={{fontSize: 'smaller'}}>WC</h1>
+                                            </div>
+                                            <div>
+                                                <h1>{player.divisional.toFixed(2)}</h1>
+                                                <h1 style={{fontSize: 'smaller'}}>DIV</h1>
+                                            </div>
+                                            <div>
+                                                <h1>{player.championship.toFixed(2)}</h1>
+                                                <h1 style={{fontSize: 'smaller'}}>CHA</h1>
+                                            </div>
+                                            <div>
+                                                <h1>{player.superbowl.toFixed(2)}</h1>
+                                                <h1 style={{fontSize: 'smaller'}}>SB</h1>
+                                            </div>
                                         </div>  
                                     </div>
                                 ))}
