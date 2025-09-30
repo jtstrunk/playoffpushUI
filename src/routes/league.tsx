@@ -50,7 +50,7 @@ export const route = {
         const navigate = useNavigate();
         const { loggedInUser } = useAuth();
         const { name, status, id } = useSearch({ from: '/league' });
-        console.log('league', name, status, id)
+        console.log('league', name, status, id);
 
         const [users, setLeagues] = useState<LeagueUsers[]>([]);
         const [userTeamRows, setTeamRows] = useState<UserTeamRow[]>([]);
@@ -98,6 +98,12 @@ export const route = {
             });
         }
 
+        function createInviteLink() {
+            console.log('creating invite link')
+            let inviteLink = `http://localhost:5173/joinLeague?id=${id}`
+            console.log('link to join', inviteLink)
+        }
+
         const userTeams: UserTeam[] = users.map(user => {
             const players = userTeamRows.filter(player => player.userid === user.userid);
             const totalpoints = players.reduce((sum, player) => sum + player.totalpoints, 0);
@@ -124,7 +130,10 @@ export const route = {
 
                 {status === "Pre-Draft" ? (
                     userTeams.length < 4 ? (
-                        <button>Needs More Users</button>
+                        <div>
+                            <h1>Needs More Users</h1>
+                            <button onClick={() => createInviteLink()}>Invite Friends</button>
+                        </div>
                     ) : (
                         <button onClick={() => handleClick()} >Join Draft Room</button>
                     )) : (
