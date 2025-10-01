@@ -66,7 +66,7 @@ export const route = {
                 <p style={{fontSize: '25px'}}>{loggedInUser}, you're invited to join the league</p>
                 <p style={{fontSize: '30px'}}>{leagueName}</p>
 
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Join Code</label>
                 <input className='textinput' id="password"
                     placeholder="Password" type="text" value={password}
                     onChange={(e) => setPassword(e.target.value)}

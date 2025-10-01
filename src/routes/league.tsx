@@ -89,6 +89,24 @@ export const route = {
             
         }, []);
 
+        const [password, setpassword] = useState(null);
+        useEffect(() => {
+            fetch(`http://localhost:3000/getleaguepassword?leagueid=${encodeURIComponent(id)}`)
+            .then(res => {
+                console.log()
+                if (!res.ok) throw new Error('Failed to fetch users team');
+                return res.json();
+            })
+            .then((data) => {
+                console.log('league password', data);
+                setpassword(data[0].password)
+            })
+            .catch(error => {
+                console.error('Error fetching player data:', error);
+            });
+            
+        }, []);
+
         function handleClick() {
             console.log('leaguename', name);
             navigate({
@@ -98,11 +116,20 @@ export const route = {
             });
         }
 
-        function createInviteLink() {
-            console.log('creating invite link')
-            let inviteLink = `http://localhost:5173/joinLeague?id=${id}`
-            console.log('link to join', inviteLink)
-        }
+        const [showPopup, setShowPopup] = useState(false);
+        const inviteLink = `http://localhost:5173/joinLeague?id=${id}`;
+
+        const copyToClipboard = () => {
+            navigator.clipboard.writeText(inviteLink)
+            .then(() => alert('Invite link copied to clipboard!'))
+            .catch(() => alert('Failed to copy invite link'));
+        };
+        const onBackgroundClick = () => {
+            setShowPopup(false);
+        };
+        const onPopupClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+        };
 
         const userTeams: UserTeam[] = users.map(user => {
             const players = userTeamRows.filter(player => player.userid === user.userid);
@@ -132,10 +159,42 @@ export const route = {
                     userTeams.length < 4 ? (
                         <div>
                             <h1>Needs More Users</h1>
-                            <button onClick={() => createInviteLink()}>Invite Friends</button>
+                            <button onClick={() => setShowPopup(true)}>Invite Friends</button>
+
+                            {showPopup && (
+                                <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                                    backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000}}>
+                                    <div onClick={onPopupClick} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px',
+                                        minWidth: '300px', boxShadow: '0px 0px 10px rgba(0,0,0,0.25)'}}>
+                                        <p>Send this to your friends:</p>
+                                        <input type="text" value={inviteLink} readOnly style={{ width: '100%'}} />
+                                        <p style={{ marginBottom: '8px' }}>Join Code: {password}</p>
+                                        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+                                            <button onClick={copyToClipboard}>Copy Link</button>
+                                            <button onClick={() => setShowPopup(false)} style={{ marginLeft: '8px' }}>Close</button>
+                                        </div> 
+                                    </div>
+                                </div>
+                            )}
+
+                            {userTeams.slice()
+                            .map((userTeam) => (
+                                <div className="user"> 
+                                    <h1>{userTeam.teamname}</h1>
+                                </div>
+                            ))}
                         </div>
                     ) : (
-                        <button onClick={() => handleClick()} >Join Draft Room</button>
+                        <div>
+                            <button onClick={() => handleClick()} >Join Draft Room</button>
+                            {userTeams.slice()
+                            .map((userTeam) => (
+                                <div className="user"> 
+                                    <h1>{userTeam.teamname}</h1>
+                                </div>
+                            ))}
+                         </div>
                     )) : (
                     <div className='user-list' style={{marginBottom: '40px'}}>
                         {userTeams.slice()
