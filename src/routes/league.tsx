@@ -131,6 +131,23 @@ export const route = {
             e.stopPropagation();
         };
 
+        function deleteLeague() {
+            console.log('deleting league');
+            fetch(`http://localhost:3000/deleteleague?leagueid=${encodeURIComponent(id)}`)
+            .then(res => {
+                console.log()
+                if (!res.ok) throw new Error('Failed to delete league');
+                return res.json();
+            })
+            .then((data) => {
+                console.log(data);
+                
+            })
+            .catch(error => {
+                console.error('Error Deleting League:', error);
+            });
+        }
+
         const userTeams: UserTeam[] = users.map(user => {
             const players = userTeamRows.filter(player => player.userid === user.userid);
             const totalpoints = players.reduce((sum, player) => sum + player.totalpoints, 0);
@@ -155,6 +172,7 @@ export const route = {
                     <h3 onClick={() => handleClick()}>View Draft Results</h3>
                 ) : null}
 
+                <button onClick={() => deleteLeague()}>Delete League</button>
                 {status === "Pre-Draft" ? (
                     userTeams.length < 4 ? (
                         <div>
