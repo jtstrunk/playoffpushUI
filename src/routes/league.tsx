@@ -117,6 +117,7 @@ export const route = {
         }
 
         const [showPopup, setShowPopup] = useState(false);
+        const [showDeletePopup, setDeleteShowPopup] = useState(false);
         const inviteLink = `http://localhost:5173/joinLeague?id=${id}`;
 
         const copyToClipboard = () => {
@@ -126,6 +127,7 @@ export const route = {
         };
         const onBackgroundClick = () => {
             setShowPopup(false);
+            setDeleteShowPopup(false);
         };
         const onPopupClick = (e: React.MouseEvent) => {
             e.stopPropagation();
@@ -172,7 +174,22 @@ export const route = {
                     <h3 onClick={() => handleClick()}>View Draft Results</h3>
                 ) : null}
 
-                <button onClick={() => deleteLeague()}>Delete League</button>
+                <button onClick={() => setDeleteShowPopup(true)}>Delete League</button>
+                {showDeletePopup && (
+                    <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                        backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000}}>
+                        <div onClick={onPopupClick} style={{ backgroundColor: 'white', padding: '20px', 
+                            borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0,0,0,0.25)'}}>
+                            <p style={{fontSize: '20px'}}>Delete the league: "{name}"</p>
+                            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginTop: '16px'}}>
+                                <button onClick={() => setDeleteShowPopup(false)} style={{ marginLeft: '8px', fontSize: '18px'}}>No</button>
+                                <button onClick={() => deleteLeague()} style={{ marginRight: '8px', fontSize: '18px' }}>Yes</button>
+                            </div> 
+                        </div>
+                    </div>
+                )}
+
                 {status === "Pre-Draft" ? (
                     userTeams.length < 4 ? (
                         <div>
