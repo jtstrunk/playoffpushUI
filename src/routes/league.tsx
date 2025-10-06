@@ -169,12 +169,17 @@ export const route = {
             <div>
                 {/* <h1>League</h1> */}
                 <h2 style={{fontSize: '25px'}}>{name}</h2>
-                <h3>Status: {status}</h3>
+                <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <h3>{status}</h3>
+                    {/* <button onClick={() => setDeleteShowPopup(true)}>Delete League</button> */}
+                    <img onClick={() => setDeleteShowPopup(true)} src='src/assets/trash.png' style={{width: '30px', height: '32px'}}></img>
+                </div>
+                
                 {status === "Post-Draft" ? (
                     <h3 onClick={() => handleClick()}>View Draft Results</h3>
                 ) : null}
 
-                <button onClick={() => setDeleteShowPopup(true)}>Delete League</button>
+                {/* <button onClick={() => setDeleteShowPopup(true)}>Delete League</button> */}
                 {showDeletePopup && (
                     <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                         backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
@@ -193,8 +198,11 @@ export const route = {
                 {status === "Pre-Draft" ? (
                     userTeams.length < 4 ? (
                         <div>
-                            <h1>Needs More Users</h1>
-                            <button onClick={() => setShowPopup(true)}>Invite Friends</button>
+                            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <h1>Needs More Users</h1>
+                                <button className="buttontest" onClick={() => setShowPopup(true)}>Invite Friends</button>
+                            </div>
+                            
 
                             {showPopup && (
                                 <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -222,7 +230,12 @@ export const route = {
                         </div>
                     ) : (
                         <div>
-                            <button onClick={() => handleClick()} >Join Draft Room</button>
+                            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <h1>Awaiting Draft</h1>
+                                {/* <button className="buttontest" onClick={() => setShowPopup(true)}>Invite Friends</button> */}
+                                <button className="buttontest" onClick={() => handleClick()}>Join Draft Room</button>
+                            </div>
+                            {/* <button onClick={() => handleClick()} >Join Draft Room</button> */}
                             {userTeams.slice()
                             .map((userTeam) => (
                                 <div className="user"> 
