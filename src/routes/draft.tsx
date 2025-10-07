@@ -3,6 +3,11 @@ import { useAuth } from '../auth/AuthContext';
 import { useSearch } from '@tanstack/react-router';
 import './draft.css';
 
+type User = {
+  userid: number;
+  teamname: string;
+}
+
 type PlayerInfo = {
   playerid: number
   name: string;
@@ -10,8 +15,6 @@ type PlayerInfo = {
   team: string;
   points: number;
 };
-
-const users: string[] = ["Nate", "Josh", "Sam", "Ethan"]
 
 type Team = {
   userName: string;
@@ -39,13 +42,6 @@ type UserTeam = {
   totalpoints: number;
   players: UserTeamRow[];
 }
-
-const initialUserTeams: Team[] = [
-  {userName: users[0], players: []},
-  {userName: users[1], players: []},
-  {userName: users[2], players: []},
-  {userName: users[3], players: []}
-]
 
 export function UserTeam(draftedTeam: Team){
   return(
@@ -83,13 +79,36 @@ export const route = {
     const { loggedInUser} = useAuth();
     const [showingList, setShowingList] = useState('ALL');
     const [selectedUser, setSelectedUser] = useState('current');
-    // const [players, setPlayers] = React.useState(initialPlayers);
-    const [userTeams, setUserTeams] = useState<Team[]>(initialUserTeams);
+    const [users, setUsers] = useState<string[]>([]);
+    const [userTeams, setUserTeams] = useState<Team[]>([]);
+    const [fullUsers, setFullUsers] = useState<User[]>([]);
     const {turnIndex, nextTurn} = useSnakeDraftTurns(users.length);
     const [draftPickNumber, setDraftPickNumber] = useState(1);
     const [leagueStatus, setLeagueStatus] = useState(null);
     const {name, id} = useSearch({ from: '/draft' });
-    console.log('league information', name, id);
+
+    useEffect(() => {
+      fetch(`http://localhost:3000/getleagueusers?leagueid=${encodeURIComponent(id)}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch league users");
+          return res.json();
+        })
+        .then((data: User[]) => {
+          setFullUsers(data);
+          const fetchedUsers = data.map(u => u.teamname);
+          setUsers(fetchedUsers);
+
+          const initialTeams: Team[] = fetchedUsers.map(userName => ({
+            userName,
+            players: [],
+          }));
+          setUserTeams(initialTeams);
+        })
+
+        .catch(error => {
+          console.error("Error fetching league users:", error);
+        });
+    }, [id]);
 
     useEffect(() => {
       fetch(`http://localhost:3000/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
@@ -222,7 +241,13 @@ export const route = {
         return newUserTeams;
       })
 
-      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(turnIndex+1)}
+      let user = fullUsers.find(user => user.teamname == users[turnIndex])
+      if (!user) {
+        console.error('no user')
+        return;
+      }
+
+      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user?.userid)}
         &playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to record draft');
@@ -310,7 +335,7 @@ export const route = {
               </ul>
             </div>
             <div className='drafted-players'>
-              <div key={userTeams[turnIndex].userName}>
+              <div key={userTeams[turnIndex]?.userName}>
                 <div style={{ display: 'flex', flexDirection: 'row', width: '430px', justifyContent: 'space-between' }}>
                   <p onClick={() => setSelectedUser('current')} style={{ cursor: 'pointer', padding: '0 8px',
                     border: selectedUser === 'current' ? '1px solid black' : 'none'}}>Current</p>
@@ -366,25 +391,25 @@ export function DraftedTeam({ playerTeam }: { playerTeam: Team }) {
     <div>
       <div className='test' style={{height: '64px', display: 'flex', alignItems: 'center'}}>
         <p style={{width: '26px', marginRight: '6px'}}>QB</p>
-        {playerTeam.players.filter(player => player.position === "QB").map((player) => (
+        {playerTeam?.players.filter(player => player.position === "QB").map((player) => (
           <DraftedPlayer playerInformation={player} key={player.name} />
         ))}
       </div>
       <div className='test' style={{height: '64px', display: 'flex', alignItems: 'center'}}>
         <p style={{width: '26px', marginRight: '6px'}}>WR</p>
-        {playerTeam.players.filter(player => player.position === "WR").map((player) => (
+        {playerTeam?.players.filter(player => player.position === "WR").map((player) => (
           <DraftedPlayer playerInformation={player} key={player.name} />
         ))}
       </div>
       <div className='test' style={{height: '64px', display: 'flex', alignItems: 'center'}}>
         <p style={{width: '26px', marginRight: '6px'}}>RB</p>
-        {playerTeam.players.filter(player => player.position === "RB").map((player) => (
+        {playerTeam?.players.filter(player => player.position === "RB").map((player) => (
           <DraftedPlayer playerInformation={player} key={player.name} />
         ))}
       </div>
       <div className='test' style={{height: '64px', display: 'flex', alignItems: 'center'}}>
         <p style={{width: '26px', marginRight: '6px'}}>TE</p>
-        {playerTeam.players.filter(player => player.position === "TE").map((player) => (
+        {playerTeam?.players.filter(player => player.position === "TE").map((player) => (
           <DraftedPlayer playerInformation={player} key={player.name} />
         ))}
       </div>
