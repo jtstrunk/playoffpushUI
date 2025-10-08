@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@tanstack/react-router": "^1.131.27",
+    "@types/socket.io-client": "^1.4.36",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from '../auth/AuthContext';
 import { useSearch } from '@tanstack/react-router';
+import io from 'socket.io-client';
 import './draft.css';
+
+const socket = io('http://localhost:3000');
 
 type User = {
   userid: number;
@@ -15,6 +18,14 @@ type PlayerInfo = {
   team: string;
   points: number;
 };
+
+type PlayerDraftedInfo = PlayerInfo & {
+  draftPickNumber: number;
+  userName: string;
+  leaguename: string;
+  id: string | number;
+};
+
 
 type Team = {
   userName: string;
@@ -82,7 +93,7 @@ export const route = {
     const [users, setUsers] = useState<string[]>([]);
     const [userTeams, setUserTeams] = useState<Team[]>([]);
     const [fullUsers, setFullUsers] = useState<User[]>([]);
-    const {turnIndex, nextTurn} = useSnakeDraftTurns(users.length);
+    const { turnIndex, nextTurn, setTurnTo } = useSnakeDraftTurns(users.length);
     const [draftPickNumber, setDraftPickNumber] = useState(1);
     const [leagueStatus, setLeagueStatus] = useState(null);
     const {name, id} = useSearch({ from: '/draft' });
@@ -118,7 +129,6 @@ export const route = {
         })
         .then((data) => {
           console.log(data)
-          console.log('status', data[0].status)
           setLeagueStatus(data[0].status);
         })
         .catch((error) => {
@@ -173,7 +183,6 @@ export const route = {
             });
 
 
-            console.log(userTeams)
           })
           .catch(error => {
             console.error('Error fetching user team:', error);
@@ -200,7 +209,71 @@ export const route = {
         });
     }, []);
 
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const name = urlParams.get('name');
+      const id = urlParams.get('id');
+
+      if (name && id) {
+        // Tell server which room to join
+        socket.emit('joinRoom', { name, id });
+      }
+
+      socket.on('playerDrafted', (data: PlayerDraftedInfo) => {
+        console.log('Player drafted event in room:', data);
+        // data is draftPickNumber, id, name (leaguename), playerName, playerid, Username
+        setPlayers(prevPlayers => {
+          return prevPlayers.filter(player => player.name !== data.name);
+        });
+
+        var testobj = {
+          0: [1, 8, 9, 16, 17, 24, 25, 32, 33, 40],
+          1: [2, 7, 10, 15, 18, 23, 26, 31, 34, 39],
+          2: [3, 6, 11, 14, 19, 22, 27, 30, 35, 38],
+          3: [4, 5, 12, 13, 20, 21, 28, 29, 36, 37]
+        }
+
+        function findKeyByValue(obj: { [key: string]: number[] }, number: number): number | null {
+          for (const key in obj) {
+            if (obj[key].includes(number)) {
+              return Number(key);
+            }
+          }
+          return null;
+        }
+        
+        var nextDraftPick = findKeyByValue(testobj, data.draftPickNumber + 1)
+        setTurnTo(nextDraftPick ?? 0);
+        setDraftPickNumber(data.draftPickNumber + 1)
+        setUserTeams(prevUserTeams => {
+          // Find the index of the current team using the userName from your users array and turnIndex
+          const teamIndex = prevUserTeams.findIndex(team => team.userName === data.userName);
+          console.log('index', teamIndex)
+          if (teamIndex === -1) return prevUserTeams; // team not found, return current state
+
+          // Create a new updated team by adding the drafted player data to the players list
+          const updatedTeam = {
+            ...prevUserTeams[teamIndex],
+            players: [...prevUserTeams[teamIndex].players, data],
+          };
+
+          // Copy the previous teams array, replace the updated team at teamIndex
+          const newUserTeams = [...prevUserTeams];
+          newUserTeams[teamIndex] = updatedTeam;
+
+          // Return the new modified teams array to update state
+          return newUserTeams;
+        });
+      });
+
+      // Cleanup to avoid multiple handlers
+      return () => {
+        socket.off('playerDrafted');
+      };
+    }, []);
+
     function draftPlayer(draftedPlayer: PlayerInfo) {
+      console.log('draft index', turnIndex)
       console.log('Draft Pick Number: ', draftPickNumber)
       console.log(users[turnIndex], 'drafted', draftedPlayer.name);
       let positionCheck = 0;
@@ -260,7 +333,19 @@ export const route = {
       .catch((error) => {
         console.error('Error drafting player:', error);
       });
-      
+
+      socket.emit('draftPlayer', {
+        playerid: draftedPlayer.playerid,
+        position: draftedPlayer.position,
+        team: draftedPlayer.team,
+        draftPickNumber,
+        userName: users[turnIndex],
+        name: draftedPlayer.name,
+        leaguename: name,
+        id
+      });
+      console.log('current draft index', turnIndex)
+
       nextTurn();
       if(draftPickNumber == 40) {
         fetch(`http://localhost:3000/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
@@ -462,5 +547,9 @@ function useSnakeDraftTurns(usersCount: number) {
     });
   }
 
-  return { turnIndex, nextTurn };
+  function setTurnTo(index: number) {
+    setTurnIndex(index);
+  }
+
+  return { turnIndex, nextTurn, setTurnTo  };
 }
