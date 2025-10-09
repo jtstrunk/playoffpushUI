@@ -6,7 +6,7 @@
 .user {
     flex-direction: row;
     justify-content: space-between;
-    width: 250px;
+    width: 260px;
     background-color: #242526;
     padding: 5px 12px;
     border-radius: 5px;
@@ -35,4 +35,30 @@
     margin-top: 5px;
     cursor: pointer;
 
+}
+
+.position-group {
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+}
+
+.QB {
+  color: #FF6961;
+  border: 1px solid #FF6961;
+}
+
+.RB {
+  color: #56AE57;
+  border: 1px solid #56AE57;
+}
+
+.WR {
+  color: #779ECB;
+  border: 1px solid #779ECB;
+}
+
+.TE {
+  color: #b9b920;
+    border: 1px solid #b9b920;
 }

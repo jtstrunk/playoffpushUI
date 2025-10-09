@@ -80,7 +80,7 @@ export const route = {
                 return res.json();
             })
             .then((data) => {
-                console.log('user teams rows', data);
+                // console.log('user teams rows', data);
                 setTeamRows(data);
             })
             .catch(error => {
@@ -162,8 +162,32 @@ export const route = {
             };
         });
 
-        
-        console.log('User Teams', userTeams);
+        console.log('userTeams', userTeams)
+        type WeekProp = 'wildcard' | 'divisional' | 'championship' | 'superbowl';
+
+        const weeks = ['Wild Card', 'Divisonal', 'Championship', 'Super Bowl'];
+        const [weekShowing, setWeekShowing] = useState('Wild Card');
+        const weekKeyMap: Record<string, WeekProp> = {
+            'Wild Card': 'wildcard',
+            'Divisonal': 'divisional',
+            'Championship': 'championship',
+            'Super Bowl': 'superbowl'
+            };
+        const weekKey = weekKeyMap[weekShowing];
+
+        function navigateRight() {
+            const currIdx = weeks.indexOf(weekShowing);
+            if (currIdx < weeks.length - 1) {
+                setWeekShowing(weeks[currIdx + 1]);
+            }
+        }
+
+            function navigateLeft() {
+            const currIdx = weeks.indexOf(weekShowing);
+            if (currIdx > 0) {
+                setWeekShowing(weeks[currIdx - 1]);
+            }
+        }
 
         return (
             <div>
@@ -242,54 +266,61 @@ export const route = {
                                     <h1>{userTeam.teamname}</h1>
                                 </div>
                             ))}
-                         </div>
+                        </div>
                     )) : (
-                    <div className='user-list' style={{marginBottom: '40px'}}>
-                        {userTeams.slice()
-                        .sort((a, b) => b.totalpoints - a.totalpoints)
-                        .map((userTeam) => (
-                            <div key={userTeam.username}>
-                            <div className="user"> 
-                                <h1>{userTeam.teamname}</h1>
-                                <h1>{userTeam.totalpoints.toFixed(2)}</h1>
+                    <div>
+                        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <button onClick={() => navigateLeft()}>Left</button>
+                            <p>{weekShowing}</p>
+                            <button onClick={() => navigateRight()}>Right</button>
+                        </div>
+
+                        <div style={{marginTop: '10px', display: 'flex', flexDirection: 'row'}}>
+                            <div style={{display: 'flex', flexDirection: 'column', marginTop: '45px'}}>
+                                <span className='position-group QB'>QB</span>
+                                <span className='position-group QB'>QB</span>
+                                <span className='position-group RB'>RB</span>
+                                <span className='position-group RB'>RB</span>
+                                <span className='position-group RB'>RB</span>
+                                <span className='position-group WR'>WR</span>
+                                <span className='position-group WR'>WR</span>
+                                <span className='position-group WR'>WR</span>
+                                <span className='position-group TE'>TE</span>
+                                <span className='position-group TE'>TE</span>
                             </div>
-                            {userTeam.players.slice()
-                                .sort((a, b) => 
-                                positionOrder[a.position as "QB" | "RB" | "WR" | "TE"] - 
-                                positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
-                                )
-                                .map((player) => (
-                                    <div key={player.playerid} style={{borderRadius: '5px', margin: '3px 2px', 
-                                        padding: '3px 2px', backgroundColor: 'lightGrey'}} >
-                                        <div style={{ display: 'flex', flexDirection: 'row',
-                                            justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
-                                            <h1>{player.position}</h1>
-                                            <h1>{player.name}</h1>
-                                            <h1>{player.totalpoints.toFixed(2)}</h1>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'row',
-                                            justifyContent: 'space-between', width: '240px', marginLeft: '5px'}}>
-                                            <div>
-                                                <h1>{player.wildcard.toFixed(2)}</h1>
-                                                <h1 style={{fontSize: 'smaller'}}>WC</h1>
-                                            </div>
-                                            <div>
-                                                <h1>{player.divisional.toFixed(2)}</h1>
-                                                <h1 style={{fontSize: 'smaller'}}>DIV</h1>
-                                            </div>
-                                            <div>
-                                                <h1>{player.championship.toFixed(2)}</h1>
-                                                <h1 style={{fontSize: 'smaller'}}>CHA</h1>
-                                            </div>
-                                            <div>
-                                                <h1>{player.superbowl.toFixed(2)}</h1>
-                                                <h1 style={{fontSize: 'smaller'}}>SB</h1>
-                                            </div>
-                                        </div>  
+
+                            {userTeams.slice()
+                                .sort((a, b) => b.totalpoints - a.totalpoints)
+                                .map(userTeam => (
+                                    <div key={userTeam.username}>
+                                    <div className="user">
+                                        <h1>{userTeam.teamname}</h1>
+                                        <h1>{userTeam.totalpoints.toFixed(2)}</h1>
                                     </div>
-                                ))}
-                            </div>
-                        ))}
+                                    {userTeam.players.slice()
+                                        .sort((a, b) =>
+                                        positionOrder[a.position as "QB" | "RB" | "WR" | "TE"]
+                                        - positionOrder[b.position as "QB" | "RB" | "WR" | "TE"]
+                                        )
+                                        .map(player => {
+                                        const weekValue = player[weekKeyMap[weekShowing]];
+                                        return (
+                                            <div key={player.playerid} style={{ borderRadius: '5px', margin: '3px 2px', padding: '3px 2px' }} >
+                                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '250px', marginLeft: '5px', height: '35px' }}>
+                                                <h1 style={{ fontSize: '18px' }}>{player.name}</h1>
+                                                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '92px'}}>
+                                                    <h1>{weekValue.toFixed(2)}</h1>
+                                                    <h1>({player.totalpoints.toFixed(2)})</h1>
+                                                </div>
+                                                
+                                            </div>
+                                            </div>
+                                        );
+                                        })}
+                                    </div>
+                                ))
+                            }
+                        </div>
                     </div>
                 )}
             </div>
