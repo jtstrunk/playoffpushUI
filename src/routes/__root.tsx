@@ -6,8 +6,7 @@ export const route = createRootRoute({
     return (
       <div>
         <nav style={{ marginBottom: 20, display: 'flex', justifyContent: 'center' }}>
-          <Link style={{ margin: '0 5px'}} to="/">Welcome</Link> | 
-          <Link style={{ margin: '0 5px'}} to="/draft">Draft</Link> | 
+          <Link style={{ margin: '0 5px'}} to="/">Your Leagues</Link> | 
           <Link style={{ margin: '0 5px'}} to="/login">Login</Link> 
         </nav>
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>

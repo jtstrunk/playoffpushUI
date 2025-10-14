@@ -190,20 +190,22 @@ export const route = {
         }
 
         return (
-            <div>
-                {/* <h1>League</h1> */}
-                <h2 style={{fontSize: '25px'}}>{name}</h2>
+            <div style={{minWidth: '400px'}}>
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <h3>{status}</h3>
-                    {/* <button onClick={() => setDeleteShowPopup(true)}>Delete League</button> */}
-                    <img onClick={() => setDeleteShowPopup(true)} src='src/assets/trash.png' style={{width: '30px', height: '32px'}}></img>
+                    {status === "Post-Draft" ? (
+                        <h2 style={{fontSize: '25px', marginLeft: '40px'}}>{name}</h2>
+                    ) : 
+                        <h2 style={{fontSize: '25px'}}>{name}</h2>
+                    }
+                    {/* <h2 style={{fontSize: '25px', marginLeft: '40px'}}>{name}</h2> */}
+                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                        {status === "Post-Draft" ? (
+                            <button className="buttontest" onClick={() => handleClick()} style={{marginRight: '8px'}}>Draft Results</button>
+                        ) : null}
+                        <img onClick={() => setDeleteShowPopup(true)} src='src/assets/trash.png' style={{width: '30px', height: '32px', marginTop: '5px'}}></img>
+                    </div>
                 </div>
                 
-                {status === "Post-Draft" ? (
-                    <h3 onClick={() => handleClick()}>View Draft Results</h3>
-                ) : null}
-
-                {/* <button onClick={() => setDeleteShowPopup(true)}>Delete League</button> */}
                 {showDeletePopup && (
                     <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                         backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
@@ -270,9 +272,11 @@ export const route = {
                     )) : (
                     <div>
                         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <button onClick={() => navigateLeft()}>Left</button>
-                            <p>{weekShowing}</p>
-                            <button onClick={() => navigateRight()}>Right</button>
+                            {/* <button onClick={() => navigateLeft()}>Left</button> */}
+                            <img src='src/assets/left-arrow.png' onClick={() => navigateLeft()} style={{width: '22px', height: '20px', marginTop: '5px', marginLeft: '40px'}}></img>
+                            <p style={{fontSize: '24px'}}>{weekShowing}</p>
+                            <img src='src/assets/right-arrow.png' onClick={() => navigateRight()} style={{width: '22px', height: '20px', marginTop: '5px'}}></img>
+                            {/* <button onClick={() => navigateRight()}>Right</button> */}
                         </div>
 
                         <div style={{marginTop: '10px', display: 'flex', flexDirection: 'row'}}>
