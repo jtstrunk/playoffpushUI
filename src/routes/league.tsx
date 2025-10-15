@@ -36,6 +36,7 @@ type UserTeam = {
     teamname: string;
     totalpoints: number;
     players: UserTeamRow[];
+    draftposition: string | null;
 }
 
 const positionOrder = {
@@ -50,10 +51,10 @@ export const route = {
         const navigate = useNavigate();
         const { loggedInUser } = useAuth();
         const { name, status, id } = useSearch({ from: '/league' });
-        console.log('league', name, status, id);
-
         const [users, setLeagues] = useState<LeagueUsers[]>([]);
         const [userTeamRows, setTeamRows] = useState<UserTeamRow[]>([]);
+        const [selectedDraftOrder, setSelectedDraftOrder] = useState<boolean>(false);
+
         useEffect(() => {
             if (loggedInUser) {
                 fetch(`http://localhost:3000/getleaguesinformation?id=${encodeURIComponent(id)}`)
@@ -64,6 +65,11 @@ export const route = {
                 .then((data: LeagueUsers[]) => {
                     console.log('LeagueUsers', data);
                     setLeagues(data);
+
+                    if(data[0].draftposition != null) {
+                        console.log('we have a draft position');
+                        setSelectedDraftOrder(true);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching player data:', error);
@@ -71,16 +77,13 @@ export const route = {
             }
         }, [loggedInUser]);
 
-        console.log('leagueid', id)
         useEffect(() => {
             fetch(`http://localhost:3000/getuserteam?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
-                console.log()
                 if (!res.ok) throw new Error('Failed to fetch users team');
                 return res.json();
             })
             .then((data) => {
-                // console.log('user teams rows', data);
                 setTeamRows(data);
             })
             .catch(error => {
@@ -93,7 +96,6 @@ export const route = {
         useEffect(() => {
             fetch(`http://localhost:3000/getleaguepassword?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
-                console.log()
                 if (!res.ok) throw new Error('Failed to fetch users team');
                 return res.json();
             })
@@ -108,7 +110,6 @@ export const route = {
         }, []);
 
         function handleClick() {
-            console.log('leaguename', name);
             navigate({
                 to: '/draft',
                 replace: true, 
@@ -134,16 +135,13 @@ export const route = {
         };
 
         function deleteLeague() {
-            console.log('deleting league');
             fetch(`http://localhost:3000/deleteleague?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
-                console.log()
                 if (!res.ok) throw new Error('Failed to delete league');
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
-                
+                console.log('league deleted', data);
             })
             .catch(error => {
                 console.error('Error Deleting League:', error);
@@ -153,18 +151,17 @@ export const route = {
         const userTeams: UserTeam[] = users.map(user => {
             const players = userTeamRows.filter(player => player.userid === user.userid);
             const totalpoints = players.reduce((sum, player) => sum + player.totalpoints, 0);
-
             return {
                 username: user.username,
                 teamname: user.teamname,
-                totalpoints: totalpoints,
-                players: players,
+                totalpoints,
+                players,
+                draftposition: user.draftposition ?? null,
             };
         });
 
         console.log('userTeams', userTeams)
         type WeekProp = 'wildcard' | 'divisional' | 'championship' | 'superbowl';
-
         const weeks = ['Wild Card', 'Divisonal', 'Championship', 'Super Bowl'];
         const [weekShowing, setWeekShowing] = useState('Wild Card');
         const weekKeyMap: Record<string, WeekProp> = {
@@ -173,7 +170,6 @@ export const route = {
             'Championship': 'championship',
             'Super Bowl': 'superbowl'
             };
-        const weekKey = weekKeyMap[weekShowing];
 
         function navigateRight() {
             const currIdx = weeks.indexOf(weekShowing);
@@ -182,22 +178,25 @@ export const route = {
             }
         }
 
-            function navigateLeft() {
+        function navigateLeft() {
             const currIdx = weeks.indexOf(weekShowing);
             if (currIdx > 0) {
                 setWeekShowing(weeks[currIdx - 1]);
             }
         }
 
+        function generateDraftOrder() {
+            console.log('gen draft order')
+        }
+
         return (
-            <div style={{minWidth: '400px'}}>
+            <div style={{minWidth: '480px'}}>
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                     {status === "Post-Draft" ? (
                         <h2 style={{fontSize: '25px', marginLeft: '40px'}}>{name}</h2>
                     ) : 
                         <h2 style={{fontSize: '25px'}}>{name}</h2>
                     }
-                    {/* <h2 style={{fontSize: '25px', marginLeft: '40px'}}>{name}</h2> */}
                     <div style={{display: 'flex', flexDirection: 'row'}}>
                         {status === "Post-Draft" ? (
                             <button className="buttontest" onClick={() => handleClick()} style={{marginRight: '8px'}}>Draft Results</button>
@@ -256,10 +255,11 @@ export const route = {
                         </div>
                     ) : (
                         <div>
+                            <h1>Awaiting Draft</h1>
                             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <h1>Awaiting Draft</h1>
-                                {/* <button className="buttontest" onClick={() => setShowPopup(true)}>Invite Friends</button> */}
-                                <button className="buttontest" onClick={() => handleClick()}>Join Draft Room</button>
+                                <button className="buttontest" onClick={() => generateDraftOrder()} style={{width: '150px'}}>Generate Draft Order</button>
+                                {/* <button className="buttontest" onClick={() => console.log('user teams', userTeams)} >kys</button> */}
+                                <button className="buttontest" onClick={() => handleClick()} disabled={!selectedDraftOrder}>Join Draft Room</button>
                             </div>
                             {/* <button onClick={() => handleClick()} >Join Draft Room</button> */}
                             {userTeams.slice()
