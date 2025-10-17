@@ -5,6 +5,7 @@ import { route as loginRoute } from './routes/login';
 import { route as draftRoute } from './routes/draft';
 import { route as leagueRoute } from './routes/league';
 import { route as joinleagueRoute } from './routes/joinleague';
+import { route as profileRoute } from './routes/profile';
 
 const routeTree = rootRoute.addChildren([
   createRoute({
@@ -61,7 +62,21 @@ const routeTree = rootRoute.addChildren([
         });
       }
     },
-  })
+  }),
+  createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/profile',
+    component: profileRoute.component,
+    beforeLoad: ({ location }) => {
+      if (!localStorage.getItem('loggedInUser')) {
+        throw redirect({
+          to: '/login',
+          search: { from: location.pathname },
+          throw: true,
+        });
+      }
+    },
+  }),
 ]);
 
 export const router = createRouter({

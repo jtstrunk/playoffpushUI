@@ -14,7 +14,7 @@ export const route = {
     const { loggedInUser } = useAuth();
     const navigate = useNavigate();
 
-    function handleClick(league: LeagueInformation) {
+    function navigateToLeague(league: LeagueInformation) {
       console.log('leaguename', league.name);
       navigate({
         to: '/league',
@@ -84,7 +84,7 @@ export const route = {
         
         <div className='league-list'>
           {leagues.map((league) => (
-            <div className='league' onClick={() => handleClick(league)}> 
+            <div className='league' onClick={() => navigateToLeague(league)}> 
               <h1>{league.name}</h1>
               <h1>{league.status}</h1>
             </div>
