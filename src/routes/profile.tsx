@@ -20,6 +20,7 @@ export const route = {
         const [incorrectPassword, setIncorrectPassword] = useState(false);
         const [currentPassword, setCurrentPassword] = useState<string>('');
         const [newPassword, setNewPassword] = useState<string>('');
+        const [pfpUrl, setPfpUrl] = useState(`/profile_pics/${loggedInUser}_pfp.png`);
 
         useEffect(() => {
             if (loggedInUser) {
@@ -55,6 +56,10 @@ export const route = {
             }
         }, [loggedInUser]);
 
+        useEffect(() => {
+            fetchProfilePicture()
+        }, [loggedInUser]);
+
         function navigateToLeague(league: LeagueInformation) {
             console.log('leaguename', league.name);
             navigate({
@@ -86,7 +91,6 @@ export const route = {
             }
         }
 
-
         function closePopup(){
             setIncorrectPassword(false);
             setShowPopup(false);
@@ -103,15 +107,45 @@ export const route = {
             e.stopPropagation();
         };
 
+        function handleFileChange(e) {
+            const file = e.target.files[0];
+            const formData = new FormData();
+            formData.append('profile', file);
+
+            fetch(`http://localhost:3000/insertuserprofilepicture?username=${loggedInUser}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(() => {
+                // Update image preview by refetching
+                fetchProfilePicture();
+            });
+        }
+
+        function fetchProfilePicture() {
+            fetch(`http://localhost:3000/getuserprofilepicture?username=${loggedInUser}`)
+            .then(res => res.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                setPfpUrl(url);
+            });
+        }
+
+
         return (
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <div>
                     <div style={{display: 'flex', flexDirection: 'row'}}>
-                        <img style={{width: '105px', height: '105px', borderRadius: '50%'}} src='src/assets/profile.jpg'></img>
+                        <img style={{width: '105px', height: '105px', borderRadius: '50%'}} src={pfpUrl}></img>
+                        <input type="file" id="file-upload" accept="image/*"
+                            onChange={handleFileChange} style={{ display: 'none' }} />
                         <div>
-                            <p style={{fontSize: '20px', marginLeft: '15px', marginTop: '2px'}}>{ loggedInUser }</p>
+                            <p style={{fontSize: '20px', marginLeft: '15px', marginTop: '3px'}}>{ loggedInUser }</p>
                             <p style={{fontSize: '16px', marginLeft: '15px'}}>{ userEmail }</p>
-                            <button style={{ marginLeft: '14px', width: '140px'}} className="buttontest" onClick={() => setShowPopup(true)}>Change Password</button>
+                            {/* <p style={{fontSize: '16px', marginLeft: '12px', marginBottom: '0px'}}>Change</p> */}
+                            <label style={{ marginLeft: '14px' }} htmlFor="file-upload" className="custom-file-label">Profile Picture</label>
+                            <button style={{ width: '100px' }} className="buttontest" onClick={() => setShowPopup(true)}>Password</button>
+                            
                         </div>
                     </div>
                     <div className='league-list' style={{ marginTop: '16px'}}>

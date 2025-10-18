@@ -34,7 +34,6 @@
   width: 125px;
   margin-top: 5px;
   cursor: pointer;
-
 }
 .buttontest:disabled {
   opacity: 0.5;
@@ -65,4 +64,23 @@
 .TE {
   color: #b9b920;
     border: 1px solid #b9b920;
+}
+
+/* profile styling */
+.custom-file-label {
+  height: 33px;
+  color: #fff;
+  background-color: #17a2b8;
+  border: 1px solid #fff;
+  display: inline-block;
+  padding: 4px 0px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  border-radius: 4px;
+  width: 125px;
+  margin-top: 5px;
+  cursor: pointer;
+  user-select: none;
 }
