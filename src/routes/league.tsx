@@ -163,13 +163,30 @@ export const route = {
         console.log('userTeams', userTeams)
         type WeekProp = 'wildcard' | 'divisional' | 'championship' | 'superbowl';
         const weeks = ['Wild Card', 'Divisonal', 'Championship', 'Super Bowl'];
-        const [weekShowing, setWeekShowing] = useState('Wild Card');
+        const [weekShowing, setWeekShowing] = useState('');
         const weekKeyMap: Record<string, WeekProp> = {
             'Wild Card': 'wildcard',
             'Divisonal': 'divisional',
             'Championship': 'championship',
             'Super Bowl': 'superbowl'
             };
+        const [currentDateTime, setCurrentDateTime] = useState(new Date());
+        // const [currentDateTime, setCurrentDateTime] = useState(new Date('2026-01-26T00:00:00'));
+        const wildCardDate = new Date('2026-01-16T00:00:00');
+        const divisonialDate = new Date('2026-01-23T00:00:00');
+        const championshipDate = new Date('2026-02-06T00:00:00');
+        
+        useEffect(() => {
+            if (currentDateTime < wildCardDate) {
+                setWeekShowing('Wild Card');
+            } else if (currentDateTime >= wildCardDate && currentDateTime < divisonialDate) {
+                setWeekShowing('Divisonal');
+            } else if (currentDateTime >= divisonialDate && currentDateTime < championshipDate) {
+                setWeekShowing('Championship');
+            } else {
+                setWeekShowing('Super Bowl');
+            }
+        }, [currentDateTime]);
 
         function navigateRight() {
             const currIdx = weeks.indexOf(weekShowing);
@@ -228,7 +245,6 @@ export const route = {
                                 <button className="buttontest" onClick={() => setShowPopup(true)}>Invite Friends</button>
                             </div>
                             
-
                             {showPopup && (
                                 <div onClick={onBackgroundClick} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                                     backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
