@@ -14,6 +14,15 @@ export const route = {
     const { loggedInUser } = useAuth();
     const navigate = useNavigate();
 
+    function navigateToStatsPage() {
+      console.log('navigating to stats page');
+      navigate({
+        to: '/updatePlayerStats',
+        replace: true, 
+        search: { }
+      });
+    }
+
     function navigateToLeague(league: LeagueInformation) {
       console.log('leaguename', league.name);
       navigate({
@@ -76,15 +85,19 @@ export const route = {
     return (
       <div>
         <h1>Playoff Push</h1>
-        <h1>Welcome, {loggedInUser}!</h1>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: "space-between", margin: '0 2px 0 0'}}>
+          <h1>Welcome, {loggedInUser}!</h1>
+          {loggedInUser === 'jtstrunk' && (<button onClick={() => navigateToStatsPage()} style={{ cursor: "pointer", width:"140px" }}>Update Player Points</button>)}
+        </div>
+        {/* <h1>Welcome, {loggedInUser}!</h1> */}
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: "space-between", margin: '15px 2px 0 2px'}}>
           <h1>Your Leagues</h1>
-          <h1 onClick={() => setIsOpen(true)} style={{ cursor: "pointer" }}>Create League</h1>
+          <h1 className="buttontest" onClick={() => setIsOpen(true)} style={{ cursor: "pointer" }}>Create League</h1>
         </div>
         
         <div className='league-list'>
           {leagues.map((league) => (
-            <div className='league' onClick={() => navigateToLeague(league)}> 
+            <div className='league' onClick={() => navigateToLeague(league)}>
               <h1>{league.name}</h1>
               <h1>{league.status}</h1>
             </div>

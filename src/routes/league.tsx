@@ -288,11 +288,9 @@ export const route = {
                     )) : (
                     <div>
                         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            {/* <button onClick={() => navigateLeft()}>Left</button> */}
                             <img src='src/assets/left-arrow.png' onClick={() => navigateLeft()} style={{width: '22px', height: '20px', marginTop: '5px', marginLeft: '40px'}}></img>
                             <p style={{fontSize: '24px'}}>{weekShowing}</p>
                             <img src='src/assets/right-arrow.png' onClick={() => navigateRight()} style={{width: '22px', height: '20px', marginTop: '5px'}}></img>
-                            {/* <button onClick={() => navigateRight()}>Right</button> */}
                         </div>
 
                         <div style={{marginTop: '10px', display: 'flex', flexDirection: 'row'}}>
