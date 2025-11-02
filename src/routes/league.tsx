@@ -324,14 +324,13 @@ export const route = {
                                         const weekValue = player[weekKeyMap[weekShowing]];
                                         return (
                                             <div key={player.playerid} style={{ borderRadius: '5px', margin: '3px 2px', padding: '3px 2px' }} >
-                                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '250px', marginLeft: '5px', height: '35px' }}>
-                                                <h1 style={{ fontSize: '18px' }}>{player.name}</h1>
-                                                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '92px'}}>
-                                                    <h1>{weekValue.toFixed(2)}</h1>
-                                                    <h1>({player.totalpoints.toFixed(2)})</h1>
+                                                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '250px', marginLeft: '5px', height: '35px' }}>
+                                                    <h1 style={{ fontSize: '18px' }}>{player.name}</h1>
+                                                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '92px'}}>
+                                                        <h1>{weekValue.toFixed(2)}</h1>
+                                                        <h1>({player.totalpoints.toFixed(2)})</h1>
+                                                    </div>
                                                 </div>
-                                                
-                                            </div>
                                             </div>
                                         );
                                         })}
