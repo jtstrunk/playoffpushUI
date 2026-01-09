@@ -26,7 +26,7 @@ export const route = {
     };
 
     const handleLogin = () => {
-      fetch(`http://localhost:3000/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+      fetch(`https://playoffpush-api.joshstrunk.com/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
         .then((res) => {
           if (!res.ok) throw new Error('Invalid username or password');
           return res.json();
@@ -52,7 +52,7 @@ export const route = {
     };
 
     const handleRegister = () => {
-      fetch(`http://localhost:3000/register?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+      fetch(`https://playoffpush-api.joshstrunk.com/register?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
         .then(res => {
           if (!res.ok) throw new Error('Username is Already Taken');
           return res.json();

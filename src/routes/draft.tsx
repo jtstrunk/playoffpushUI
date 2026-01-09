@@ -4,7 +4,7 @@ import { useSearch } from '@tanstack/react-router';
 import io from 'socket.io-client';
 import './draft.css';
 
-const socket = io('http://localhost:3000');
+const socket = io('https://playoffpush-api.joshstrunk.com');
 
 type User = {
   userid: number;
@@ -99,7 +99,7 @@ export const route = {
     const {name, id} = useSearch({ from: '/draft' });
 
     useEffect(() => {
-      fetch(`http://localhost:3000/getleagueusers?leagueid=${encodeURIComponent(id)}`)
+      fetch(`https://playoffpush-api.joshstrunk.com/getleagueusers?leagueid=${encodeURIComponent(id)}`)
         .then(res => {
           if (!res.ok) throw new Error("Failed to fetch league users");
           return res.json();
@@ -122,7 +122,7 @@ export const route = {
     }, [id]);
 
     useEffect(() => {
-      fetch(`http://localhost:3000/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
+      fetch(`https://playoffpush-api.joshstrunk.com/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
         .then((res) => {
           if (!res.ok) throw new Error('Failed to fetch league information');
           return res.json();
@@ -138,7 +138,7 @@ export const route = {
 
     useEffect(() => {
       if (leagueStatus === 'Post-Draft') {
-        fetch(`http://localhost:3000/getuserteam?leagueid=${encodeURIComponent(id)}`)
+        fetch(`https://playoffpush-api.joshstrunk.com/getuserteam?leagueid=${encodeURIComponent(id)}`)
           .then(res => {
             if (!res.ok) throw new Error('Failed to fetch user team');
             return res.json();
@@ -193,7 +193,7 @@ export const route = {
 
     const [players, setPlayers] = useState<PlayerInfo[]>([]);
     useEffect(() => {
-      fetch('http://localhost:3000/getplayers')
+      fetch('https://playoffpush-api.joshstrunk.com/getplayers')
         .then((res) => {
           if (!res.ok) {
             throw new Error('Failed to fetch players');
@@ -320,7 +320,7 @@ export const route = {
         return;
       }
 
-      fetch(`http://localhost:3000/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user?.userid)}
+      fetch(`https://playoffpush-api.joshstrunk.com/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user?.userid)}
         &playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to record draft');
@@ -348,7 +348,7 @@ export const route = {
 
       nextTurn();
       if(draftPickNumber == 40) {
-        fetch(`http://localhost:3000/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
+        fetch(`https://playoffpush-api.joshstrunk.com/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
           .then((res) => {
             if (!res.ok) throw new Error('Failed to record draft');
             return res.json();

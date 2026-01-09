@@ -24,7 +24,7 @@ export const route = {
 
         useEffect(() => {
             if (loggedInUser) {
-                fetch(`http://localhost:3000/getuserinformation?username=${encodeURIComponent(loggedInUser)}`)
+                fetch(`https://playoffpush-api.joshstrunk.com/getuserinformation?username=${encodeURIComponent(loggedInUser)}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Failed to fetch users');
                     return res.json();
@@ -41,7 +41,7 @@ export const route = {
 
         useEffect(() => {
             if (loggedInUser) {
-            fetch(`http://localhost:3000/getuserleagues?username=${encodeURIComponent(loggedInUser)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/getuserleagues?username=${encodeURIComponent(loggedInUser)}`)
                 .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch players');
                 return res.json();
@@ -71,7 +71,7 @@ export const route = {
 
         function updatePassword() {
             if (loggedInUser) {
-                fetch(`http://localhost:3000/changepassword?username=${encodeURIComponent(loggedInUser)}&currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`)
+                fetch(`https://playoffpush-api.joshstrunk.com/changepassword?username=${encodeURIComponent(loggedInUser)}&currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`)
                 .then(async (response) => {
                     if (!response.ok) {
                     const errorData = await response.json();
@@ -112,7 +112,7 @@ export const route = {
             const formData = new FormData();
             formData.append('profile', file);
 
-            fetch(`http://localhost:3000/insertuserprofilepicture?username=${loggedInUser}`, {
+            fetch(`https://playoffpush-api.joshstrunk.com/insertuserprofilepicture?username=${loggedInUser}`, {
                 method: 'POST',
                 body: formData,
             })
@@ -123,7 +123,7 @@ export const route = {
         }
 
         function fetchProfilePicture() {
-            fetch(`http://localhost:3000/getuserprofilepicture?username=${loggedInUser}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/getuserprofilepicture?username=${loggedInUser}`)
             .then(res => res.blob())
             .then(blob => {
                 const url = URL.createObjectURL(blob);

@@ -57,7 +57,7 @@ export const route = {
 
         useEffect(() => {
             if (loggedInUser) {
-                fetch(`http://localhost:3000/getleaguesinformation?id=${encodeURIComponent(id)}`)
+                fetch(`https://playoffpush-api.joshstrunk.com/getleaguesinformation?id=${encodeURIComponent(id)}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Failed to fetch users');
                     return res.json();
@@ -78,7 +78,7 @@ export const route = {
         }, [loggedInUser]);
 
         useEffect(() => {
-            fetch(`http://localhost:3000/getuserteam?leagueid=${encodeURIComponent(id)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/getuserteam?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch users team');
                 return res.json();
@@ -94,7 +94,7 @@ export const route = {
 
         const [password, setpassword] = useState(null);
         useEffect(() => {
-            fetch(`http://localhost:3000/getleaguepassword?leagueid=${encodeURIComponent(id)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/getleaguepassword?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
                 if (!res.ok) throw new Error('Failed to fetch users team');
                 return res.json();
@@ -119,7 +119,7 @@ export const route = {
 
         const [showPopup, setShowPopup] = useState(false);
         const [showDeletePopup, setDeleteShowPopup] = useState(false);
-        const inviteLink = `http://localhost:5173/joinLeague?id=${id}`;
+        const inviteLink = `https://playoffpush.joshstrunk.com/joinLeague?id=${id}`;
 
         const copyToClipboard = () => {
             navigator.clipboard.writeText(inviteLink)
@@ -135,7 +135,7 @@ export const route = {
         };
 
         function deleteLeague() {
-            fetch(`http://localhost:3000/deleteleague?leagueid=${encodeURIComponent(id)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/deleteleague?leagueid=${encodeURIComponent(id)}`)
             .then(res => {
                 if (!res.ok) throw new Error('Failed to delete league');
                 return res.json();
@@ -273,9 +273,9 @@ export const route = {
                         <div>
                             <h1>Awaiting Draft</h1>
                             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <button className="buttontest" onClick={() => generateDraftOrder()} style={{width: '150px'}}>Generate Draft Order</button>
+                                {/* <button className="buttontest" onClick={() => generateDraftOrder()} style={{width: '150px'}}>Generate Draft Order</button> */}
                                 {/* <button className="buttontest" onClick={() => console.log('user teams', userTeams)} >kys</button> */}
-                                <button className="buttontest" onClick={() => handleClick()} disabled={!selectedDraftOrder}>Join Draft Room</button>
+                                <button className="buttontest" onClick={() => handleClick()} >Join Draft Room</button>
                             </div>
                             {/* <button onClick={() => handleClick()} >Join Draft Room</button> */}
                             {userTeams.slice()

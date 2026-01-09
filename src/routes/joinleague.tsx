@@ -13,7 +13,7 @@ export const route = {
         console.log('league', id);
 
         useEffect(() => {
-            fetch(`http://localhost:3000/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/getspecificleagueinformation?leagueid=${encodeURIComponent(id)}`)
                 .then((res) => {
                 if (!res.ok) throw new Error('Failed to fetch league information');
                 return res.json();
@@ -30,7 +30,7 @@ export const route = {
         function joinLeague() {
             console.log(`joining league ${leagueName}(${id}) with password ${password}`);
 
-            fetch(`http://localhost:3000/checkleaguepassword?id=${encodeURIComponent(id)}&inputpassword=${encodeURIComponent(password)}`)
+            fetch(`https://playoffpush-api.joshstrunk.com/checkleaguepassword?id=${encodeURIComponent(id)}&inputpassword=${encodeURIComponent(password)}`)
             .then(res => {
                 console.log()
                 if (!res.ok) throw new Error('Failed to fetch users team');
@@ -40,7 +40,7 @@ export const route = {
                 console.log('passwordcheck', data);
                 if(data.success == true) {
                     console.log("JOINED LEAGUE")
-                    fetch(`http://localhost:3000/leagueadduser?leagueid=${encodeURIComponent(id)}&teamname=${encodeURIComponent(loggedInUser ?? '')}`)
+                    fetch(`https://playoffpush-api.joshstrunk.com/leagueadduser?leagueid=${encodeURIComponent(id)}&teamname=${encodeURIComponent(loggedInUser ?? '')}`)
                     .then(res => {
                         if (!res.ok) throw new Error('Network response was not ok');
                         return res.json();

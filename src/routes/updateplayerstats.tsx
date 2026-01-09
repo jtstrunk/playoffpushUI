@@ -79,7 +79,7 @@ export const route = {
     useEffect(() => {
       async function fetchPlayers() {
         try {
-          const res = await fetch('http://localhost:3000/getdraftedplayers');
+          const res = await fetch('https://playoffpush-api.joshstrunk.com/getdraftedplayers');
           if (!res.ok) throw new Error('Failed to fetch unique players');
           const data: PlayerInfo[] = await res.json();
 
@@ -169,7 +169,7 @@ export const route = {
 
     function submitChangedPlayers() {
         console.log(changedPlayers)
-        fetch('http://localhost:3000/updateplayerstats', {
+        fetch('https://playoffpush-api.joshstrunk.com/updateplayerstats', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(changedPlayers),
@@ -348,7 +348,7 @@ export const route = {
 //         const [players, setPlayers] = useState<PlayerInfo[]>([]);
 
 //         useEffect(() => {
-//             fetch(`http://localhost:3000/getdraftedplayers`)
+//             fetch(`https://playoffpush-api.joshstrunk.com/getdraftedplayers`)
 //             .then((res) => {
 //                 if (!res.ok) throw new Error('Failed to fetch unique players');
 //                 return res.json();
@@ -393,7 +393,7 @@ export const route = {
 //                 { playerid: 35, week: 'superbowl', points: 20 }
 //             ];
 
-//             fetch('http://localhost:3000/updateplayerstats', {
+//             fetch('https://playoffpush-api.joshstrunk.com/updateplayerstats', {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify(updates)

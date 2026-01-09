@@ -35,7 +35,7 @@ export const route = {
     const [leagues, setLeagues] = useState<LeagueInformation[]>([]);
     useEffect(() => {
       if (loggedInUser) {
-        fetch(`http://localhost:3000/getuserleagues?username=${encodeURIComponent(loggedInUser)}`)
+        fetch(`https://playoffpush-api.joshstrunk.com/getuserleagues?username=${encodeURIComponent(loggedInUser)}`)
           .then(res => {
             if (!res.ok) throw new Error('Failed to fetch players');
             return res.json();
@@ -55,7 +55,7 @@ export const route = {
 
     const createLeague = () => {
       console.log('creating league', leagueName);
-      fetch(`http://localhost:3000/createleague?leaguename=${encodeURIComponent(leagueName)}`)
+      fetch(`https://playoffpush-api.joshstrunk.com/createleague?leaguename=${encodeURIComponent(leagueName)}`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
@@ -64,7 +64,7 @@ export const route = {
         console.log(data);
         let newleagueid = data.id;
 
-        fetch(`http://localhost:3000/leagueadduser?leagueid=${encodeURIComponent(newleagueid)}&teamname=${encodeURIComponent(loggedInUser ?? '')}`)
+        fetch(`https://playoffpush-api.joshstrunk.com/leagueadduser?leagueid=${encodeURIComponent(newleagueid)}&teamname=${encodeURIComponent(loggedInUser ?? '')}`)
         .then(res => {
           if (!res.ok) throw new Error('Network response was not ok');
           return res.json();
