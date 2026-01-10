@@ -80,3 +80,28 @@
     gap: 1rem;
     min-width: 300px;
 }
+
+@media (max-width: 600px) {
+  .league {
+    width: 98%;
+    text-align: center;
+  }
+
+  .league h1 {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  button {
+    width: 100%;          /* make buttons fill the width on mobile */
+  }
+
+  .modal {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
