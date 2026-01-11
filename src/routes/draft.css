@@ -14,6 +14,56 @@ body {
   }
 }
 
+@media (max-width: 1000px) {
+  .draft-test-scroll-container {
+    width: 500px; /* Matches your .drafted-players width */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .draft-test-scroll-container::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .draft-test-scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .draft-test-scroll-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  .draft-test {
+    display: flex !important; /* Override your display: none */
+    flex-direction: column;
+    width: 900px;
+  }
+
+  .drafted-row {
+    min-width: 1300px;
+  }
+
+  .test {
+    min-width: 1300px;
+  }
+
+  .mobileTEST {
+    transform: scale(0.9);
+  }
+
+  .drafted-row p {
+    flex: none !important;  /* Stops flexbox from stretching */
+    width: 90px !important; /* Forces exact width */
+    margin-right: 6px !important;
+  }
+  
+  .drafted-row p:first-child {
+    width: 86px !important; /* Matches header row exactly */
+  }
+}
 
 .draftable-player-div {
   width: 150px;

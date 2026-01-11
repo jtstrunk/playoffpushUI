@@ -93,10 +93,11 @@ export const route = {
     const [users, setUsers] = useState<string[]>([]);
     const [userTeams, setUserTeams] = useState<Team[]>([]);
     const [fullUsers, setFullUsers] = useState<User[]>([]);
-    const { turnIndex, nextTurn, setTurnTo } = useSnakeDraftTurns(users.length);
     const [draftPickNumber, setDraftPickNumber] = useState(1);
+    const { turnIndex, nextTurn, setTurnTo } = useSnakeDraftTurns(users.length, draftPickNumber);
     const [leagueStatus, setLeagueStatus] = useState(null);
     const {name, id} = useSearch({ from: '/draft' });
+    const [isDrafting, setIsDrafting] = useState(false);
 
     useEffect(() => {
       fetch(`https://playoffpush-api.joshstrunk.com/getleagueusers?leagueid=${encodeURIComponent(id)}`)
@@ -272,104 +273,197 @@ export const route = {
       };
     }, []);
 
+    // function draftPlayer(draftedPlayer: PlayerInfo) {
+    //   console.log('draft index', turnIndex)
+    //   console.log('Draft Pick Number: ', draftPickNumber)
+    //   console.log(users[turnIndex], 'drafted', draftedPlayer.name);
+    //   let positionCheck = 0;
+    //   userTeams[turnIndex].players.forEach(element => {
+    //     if(element.position == draftedPlayer.position) {
+    //       positionCheck++;
+    //     }
+    //   });
+
+    //   if(draftedPlayer.position == 'QB' && positionCheck >= 2) {
+    //     return;
+    //   } else if(draftedPlayer.position == 'WR' && positionCheck >= 3) {
+    //     return;
+    //   } else if(draftedPlayer.position == 'RB' && positionCheck >= 3) {
+    //     return;
+    //   } else if(draftedPlayer.position == 'TE' && positionCheck >= 2) {
+    //     return;
+    //   }
+
+    //   setPlayers(players.filter(player => player.name !== draftedPlayer.name));
+    //   console.log(draftedPlayer)
+
+    //   setUserTeams(prevUserTeams => {
+    //     // Find index of the current team
+    //     const teamIndex = prevUserTeams.findIndex(team => team.userName === users[turnIndex]);
+    //     if (teamIndex === -1) return prevUserTeams; // team not found
+
+    //     // Copy the team and add drafted player
+    //     const updatedTeam = {
+    //       ...prevUserTeams[teamIndex],
+    //       players: [...prevUserTeams[teamIndex].players, draftedPlayer],
+    //     };
+
+    //     // Copy the entire userTeams array replacing the updated team
+    //     const newUserTeams = [...prevUserTeams];
+    //     newUserTeams[teamIndex] = updatedTeam;
+
+    //     return newUserTeams;
+    //   })
+
+    //   let user = fullUsers.find(user => user.teamname == users[turnIndex])
+    //   if (!user) {
+    //     console.error('no user')
+    //     return;
+    //   }
+
+    //   fetch(`https://playoffpush-api.joshstrunk.com/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user?.userid)}
+    //     &playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
+    //   .then((res) => {
+    //     if (!res.ok) throw new Error('Failed to record draft');
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     console.log('Draft player response', data);
+    //     setDraftPickNumber(prev => prev + 1);
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error drafting player:', error);
+    //   });
+
+    //   socket.emit('draftPlayer', {
+    //     playerid: draftedPlayer.playerid,
+    //     position: draftedPlayer.position,
+    //     team: draftedPlayer.team,
+    //     draftPickNumber,
+    //     userName: users[turnIndex],
+    //     name: draftedPlayer.name,
+    //     leaguename: name,
+    //     id
+    //   });
+    //   console.log('current draft index', turnIndex)
+
+    //   nextTurn();
+    //   if(draftPickNumber == 40) {
+    //     fetch(`https://playoffpush-api.joshstrunk.com/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
+    //       .then((res) => {
+    //         if (!res.ok) throw new Error('Failed to record draft');
+    //         return res.json();
+    //       })
+    //       .then((data) => {
+    //         console.log('Draft player response', data);
+    //       })
+    //       .catch((error) => {
+    //         console.error('Error drafting player:', error);
+    //     });
+    //   }
+    // }
+
     function draftPlayer(draftedPlayer: PlayerInfo) {
-      console.log('draft index', turnIndex)
-      console.log('Draft Pick Number: ', draftPickNumber)
-      console.log(users[turnIndex], 'drafted', draftedPlayer.name);
+      // 1. BLOCK CONCURRENT DRAFTS
+      if (isDrafting || draftPickNumber >= 160) return;
+      
+      console.log('draft index', turnIndex);
+      console.log('Draft Pick Number: ', draftPickNumber);
+      
+      // 2. POSITION CHECK (keep yours - fix array access)
       let positionCheck = 0;
-      userTeams[turnIndex].players.forEach(element => {
-        if(element.position == draftedPlayer.position) {
-          positionCheck++;
-        }
-      });
-
-      if(draftedPlayer.position == 'QB' && positionCheck >= 2) {
-        return;
-      } else if(draftedPlayer.position == 'WR' && positionCheck >= 3) {
-        return;
-      } else if(draftedPlayer.position == 'RB' && positionCheck >= 3) {
-        return;
-      } else if(draftedPlayer.position == 'TE' && positionCheck >= 2) {
-        return;
-      }
-
-      setPlayers(players.filter(player => player.name !== draftedPlayer.name));
-      console.log(draftedPlayer)
-
-      setUserTeams(prevUserTeams => {
-        // Find index of the current team
-        const teamIndex = prevUserTeams.findIndex(team => team.userName === users[turnIndex]);
-        if (teamIndex === -1) return prevUserTeams; // team not found
-
-        // Copy the team and add drafted player
-        const updatedTeam = {
-          ...prevUserTeams[teamIndex],
-          players: [...prevUserTeams[teamIndex].players, draftedPlayer],
-        };
-
-        // Copy the entire userTeams array replacing the updated team
-        const newUserTeams = [...prevUserTeams];
-        newUserTeams[teamIndex] = updatedTeam;
-
-        return newUserTeams;
-      })
-
-      let user = fullUsers.find(user => user.teamname == users[turnIndex])
-      if (!user) {
-        console.error('no user')
-        return;
-      }
-
-      fetch(`https://playoffpush-api.joshstrunk.com/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user?.userid)}
-        &playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to record draft');
-        return res.json();
-      })
-      .then((data) => {
-        console.log('Draft player response', data);
-        setDraftPickNumber(prev => prev + 1);
-      })
-      .catch((error) => {
-        console.error('Error drafting player:', error);
-      });
-
-      socket.emit('draftPlayer', {
-        playerid: draftedPlayer.playerid,
-        position: draftedPlayer.position,
-        team: draftedPlayer.team,
-        draftPickNumber,
-        userName: users[turnIndex],
-        name: draftedPlayer.name,
-        leaguename: name,
-        id
-      });
-      console.log('current draft index', turnIndex)
-
-      nextTurn();
-      if(draftPickNumber == 40) {
-        fetch(`https://playoffpush-api.joshstrunk.com/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
-          .then((res) => {
-            if (!res.ok) throw new Error('Failed to record draft');
-            return res.json();
-          })
-          .then((data) => {
-            console.log('Draft player response', data);
-          })
-          .catch((error) => {
-            console.error('Error drafting player:', error);
+      const currentTeam = userTeams[turnIndex];
+      if (currentTeam) {
+        currentTeam.players.forEach(element => {
+          if (element.position === draftedPlayer.position) {
+            positionCheck++;
+          }
         });
       }
+
+      // 3. POSITION LIMITS (your logic)
+      if (draftedPlayer.position === 'QB' && positionCheck >= 2) return;
+      if (draftedPlayer.position === 'WR' && positionCheck >= 3) return;
+      if (draftedPlayer.position === 'RB' && positionCheck >= 3) return;
+      if (draftedPlayer.position === 'TE' && positionCheck >= 2) return;
+
+      setIsDrafting(true); // LOCK
+
+      let user = fullUsers.find(user => user.teamname === users[turnIndex]);
+      if (!user) {
+        console.error('no user');
+        setIsDrafting(false);
+        return;
+      }
+
+      // 4. ALL LOGIC AFTER API SUCCESS
+      fetch(`https://playoffpush-api.joshstrunk.com/draftplayer?leagueid=${encodeURIComponent(id)}&userid=${encodeURIComponent(user.userid)}&playerid=${encodeURIComponent(draftedPlayer.playerid)}&draftpick=${encodeURIComponent(draftPickNumber)}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to record draft');
+          return res.json();
+        })
+        .then((data) => {
+          console.log('Draft player response', data);
+          
+          // 5. STATE UPDATES (safe order)
+          setPlayers(prev => prev.filter(player => player.name !== draftedPlayer.name));
+          
+          setUserTeams(prevUserTeams => {
+            const teamIndex = prevUserTeams.findIndex(team => team.userName === users[turnIndex]);
+            if (teamIndex === -1) return prevUserTeams;
+            const updatedTeam = {
+              ...prevUserTeams[teamIndex],
+              players: [...prevUserTeams[teamIndex].players, draftedPlayer],
+            };
+            const newUserTeams = [...prevUserTeams];
+            newUserTeams[teamIndex] = updatedTeam;
+            return newUserTeams;
+          });
+
+          // 6. EMIT SOCKET
+          socket.emit('draftPlayer', {
+            playerid: draftedPlayer.playerid,
+            position: draftedPlayer.position,
+            team: draftedPlayer.team,
+            draftPickNumber,
+            userName: users[turnIndex],
+            name: draftedPlayer.name,
+            leaguename: name,
+            id
+          });
+
+          // 7. ADVANCE PICK & TURN
+          const newPickNumber = draftPickNumber + 1;
+          setDraftPickNumber(newPickNumber);
+          nextTurn(); // Now sees correct draftPickNumber
+
+          setIsDrafting(false); // UNLOCK
+
+          // 8. CHECK DRAFT END (fix: use newPickNumber)
+          if (newPickNumber >= 160) { // 4 teams * 40 picks
+            fetch(`https://playoffpush-api.joshstrunk.com/setstatus?leagueid=${encodeURIComponent(id)}&status=${encodeURIComponent('Post-Draft')}`)
+              .then(res => {
+                if (!res.ok) throw new Error('Failed');
+                return res.json();
+              })
+              .catch(console.error);
+          }
+        })
+        .catch((error) => {
+          console.error('Error drafting player:', error);
+          setIsDrafting(false); // Always unlock
+        });
     }
 
+
     return (
-      <main className="flex items-center justify-center pt-16 pb-4">
+      <main className="flex items-center justify-center pt-16 pb-4 mobileTEST">
         <div className="flex-1 flex flex-col items-center gap-6 min-h-0">
           <header className="flex flex-col items-center gap-9">
             <h1>Draft Page - {name} - {leagueStatus}</h1>
             <h1>Welcome, {loggedInUser}!</h1>
           </header>
-          <div>
+          <div className="draft-test">
             <div className="test">
               <p style={{width: '86px'}}></p>
               <p style={{width: '154px', textAlign: 'center'}}>Round One</p>
@@ -385,7 +479,7 @@ export const route = {
             </div>
             {userTeams.map((team) => (
               <div key={team.userName} className='drafted-row'>
-                <p style={{width: '80px', marginRight: '6px'}}>{team.userName}</p>
+                <p style={{width: '90px', marginRight: '6px'}}>{team.userName}</p>
                 <ul className='test'>
                   {team.players.map((player) => (
                     <DraftedPlayer playerInformation={player} key={player.name} />
@@ -502,54 +596,39 @@ export function DraftedTeam({ playerTeam }: { playerTeam: Team }) {
   )
 }
 
-
-// Helpers 
-function useSnakeDraftTurns(usersCount: number) {
+function useSnakeDraftTurns(usersCount: number, draftPickNumber: number) {
   const [turnIndex, setTurnIndex] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
-  const [repeatCount, setRepeatCount] = useState(0);
-
+  
   function nextTurn() {
-    setTurnIndex(prevIndex => {
-      let nextIndex = prevIndex + direction;
-      let nextRepeat = repeatCount;
-
-      // Handle bounds and snake behavior
-      if (nextIndex >= usersCount) {
-        // At the end: stay two times then reverse
-        if (repeatCount < 1) {
-          nextRepeat++;
-          setRepeatCount(nextRepeat);
-          nextIndex = prevIndex; // stay on last user
-        } else {
-          // After repeating twice, reverse direction
-          setDirection(-1);
-          setRepeatCount(0);
-          nextIndex = prevIndex - 1; // start going backward
-        }
-      } else if (nextIndex < 0) {
-        // At the start: stay two times then reverse
-        if (repeatCount < 1) {
-          nextRepeat++;
-          setRepeatCount(nextRepeat);
-          nextIndex = prevIndex; // stay on first user
-        } else {
-          setDirection(1);
-          setRepeatCount(0);
-          nextIndex = prevIndex + 1; // start going forward
-        }
-      } else {
-        // Normal advance, reset repeat count
-        setRepeatCount(0);
-      }
-
-      return nextIndex;
+    setTurnIndex(() => {
+      const pickInCycle = draftPickNumber % (usersCount * 2);
+      const isReverseRound = Math.floor(pickInCycle / usersCount) % 2 === 1;
+      const positionInRound = pickInCycle % usersCount;
+      return isReverseRound ? usersCount - 1 - positionInRound : positionInRound;
     });
   }
 
-  function setTurnTo(index: number) {
-    setTurnIndex(index);
-  }
-
-  return { turnIndex, nextTurn, setTurnTo  };
+  return { turnIndex, nextTurn, setTurnTo: setTurnIndex };
 }
+
+// function useSnakeDraftTurns(usersCount: number, draftPickNumber: number) {
+//   const [turnIndex, setTurnIndex] = useState(0);
+  
+//   function nextTurn() {
+//     setTurnIndex(prevIndex => {
+//       // Calculate pick number deterministically - NO extra state needed
+//       const totalPicksSoFar = draftPickNumber; // Use your global draftPickNumber
+//       const pickInCycle = totalPicksSoFar % (usersCount * 2); // 8-pick cycles
+//       const isReverseRound = Math.floor(pickInCycle / usersCount) % 2 === 1;
+//       const positionInRound = pickInCycle % usersCount;
+      
+//       if (isReverseRound) {
+//         return usersCount - 1 - positionInRound; // 3,2,1,0
+//       } else {
+//         return positionInRound; // 0,1,2,3
+//       }
+//     });
+//   }
+
+//   return { turnIndex, nextTurn, setTurnTo: setTurnIndex };
+// }
