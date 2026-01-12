@@ -16,24 +16,25 @@ type PlayerInfo = {
 type PlayoffTeams = Record<string, PlayerInfo[]>;
 
 const nflTeamMap = {
-  BUF: 'Buffalo Bills',
-  CIN: 'Cincinnati Bengals',
-  KC: 'Kansas City Chiefs',
-  BAL: 'Baltimore Ravens',
-  HOU: 'Houston Texans',
-  LAC: 'Los Angeles Chargers',
+  DEN: 'Denver Broncos',
+  NE: 'New England Patriots',
+  JAX: 'Jacksonville Jaguars',
   PIT: 'Pittsburgh Steelers',
-  DET: 'Detroit Lions',
+  HOU: 'Houston Texans',
+  BUF: 'Buffalo Bills',
+  LAC: 'Los Angeles Chargers',
+
+  SEA: 'Seattle Seahawks',
+  CHI: 'Chicago Bears',
   PHI: 'Philadelphia Eagles',
-  TB: 'Tampa Bay Buccaneers',
+  CAR: 'Carolina Panthers',
   LAR: 'Los Angeles Rams',
-  MIN: 'Minnesota Vikings',
-  WAS: 'Washington Commanders',
-  GB: 'Green Bay Packers',
+  SF: 'San Francisco 49ers',
+  GB: 'Green Bay Packers'
 } as const;
 
-const AFCteams = ['BUF', 'CIN', 'KC', 'BAL', 'HOU', 'LAC', 'PIT'] as const;
-const NFCteams = ['DET', 'PHI', 'TB', 'LAR', 'MIN', 'WAS', 'GB'] as const;
+const AFCteams = ['DEN', 'NE', 'JAX', 'PIT', 'HOU', 'BUF', 'LAC'] as const;
+const NFCteams = ['SEA', 'CHI', 'PHI', 'CAR', 'LAR', 'SF', 'GB'] as const;
 
 type WeekProp = 'wildcard' | 'divisional' | 'championship' | 'superbowl';
 
@@ -230,6 +231,7 @@ export const route = {
                       <div>{player.name}</div>
                       <input
                         type="number"
+                        step="0.01"
                         value={weekValue.toFixed(2)}
                         style={{ fontSize: 18, width: 80 }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -263,6 +265,7 @@ export const route = {
                       <div>{player.name}</div>
                       <input
                         type="number"
+                        step="0.01"
                         value={weekValue.toFixed(2)}
                         style={{ fontSize: 18, width: 80 }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
